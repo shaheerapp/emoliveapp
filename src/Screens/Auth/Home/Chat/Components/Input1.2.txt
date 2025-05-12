@@ -1,0 +1,336 @@
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  Alert,
+} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {colors} from '../../../../../styles/colors';
+import appStyles from '../../../../../styles/styles';
+import Svg, {Polyline} from 'react-native-svg';
+
+export default function Input({message, setMessage, sendMsg}) {
+  const audioRecorderPlayer = useRef(new AudioRecorderPlayer()).current;
+
+  const [audioData, setAudioData] = useState<any>([]);
+  const [audioMessage, setAudioMessage] = useState({
+    record: false,
+    recorded: false,
+    played: false,
+    renderPlay: false,
+    // audioData:[],
+    uri: '',
+    // recordTime:'',
+    // playTime:
+  });
+  const [recordTime, setRecordTime] = useState<any>('12:00');
+  const [playTime, setPlayTime] = useState('');
+
+  useEffect(() => {
+    return () => {
+      audioRecorderPlayer.removePlayBackListener();
+      audioRecorderPlayer.removeRecordBackListener();
+    };
+  }, []);
+
+  const onStartPlay = async () => {
+    try {
+      if (audioMessage.played) {
+        await audioRecorderPlayer.stopPlayer();
+        onStopPlay();
+        return;
+      }
+      const msg = await audioRecorderPlayer.startPlayer();
+      console.log('Playing audio:', msg);
+
+      audioRecorderPlayer.addPlayBackListener(e => {
+        const waveform = processAudioData(e.currentPosition); // Simulated data
+        setAudioData(waveform);
+
+        const positionInSeconds = e.currentPosition / 1000;
+
+        setPlayTime(audioRecorderPlayer.mmss(Math.floor(positionInSeconds)));
+
+        if (e.currentPosition >= e.duration) {
+          onStopPlay();
+        }
+      });
+
+      setAudioMessage({...audioMessage, played: true});
+    } catch (error) {
+      console.error('Error starting playback:', error);
+    }
+  };
+
+  const processAudioData = position => {
+    const maxHeight = 18;
+    const maxAmplitude = 100;
+
+    return Array.from({length: 50}, () => {
+      const randomValue = Math.random() * maxAmplitude; // Simulate amplitude
+      return (randomValue / maxAmplitude) * maxHeight; // Normalize to maxHeight
+    });
+  };
+
+  const recordVoice = async () => {
+    try {
+      if (audioMessage.record) {
+        console.log('b');
+        const result = await audioRecorderPlayer.stopRecorder();
+        console.log(result, 'recording stopped');
+        audioRecorderPlayer.removeRecordBackListener();
+        setRecordTime('');
+        setAudioMessage({...audioMessage, record: false, renderPlay: true});
+        return;
+      }
+      console.log('a');
+      const result = await audioRecorderPlayer.startRecorder();
+      console.log('file uri ', result);
+
+      audioRecorderPlayer.addRecordBackListener(e => {
+        const waveform = processAudioData(e.currentPosition); // Simulated data
+        setAudioData(waveform);
+        const positionInSeconds = e.currentPosition / 1000;
+        setRecordTime(audioRecorderPlayer.mmss(Math.floor(positionInSeconds)));
+        // setRecordTime(
+        //   audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+        // );
+      });
+      setAudioMessage({
+        ...audioMessage,
+        record: true,
+        recorded: true,
+        renderPlay: false,
+        uri: result,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onStopPlay = async () => {
+    await audioRecorderPlayer.stopPlayer();
+    setAudioMessage({...audioMessage, played: false});
+
+    // setAudioData([]);
+  };
+
+  const deleteVoice = async () => {
+    try {
+      await audioRecorderPlayer.stopRecorder();
+      await audioRecorderPlayer.stopPlayer();
+      audioRecorderPlayer.removeRecordBackListener();
+      audioRecorderPlayer.removePlayBackListener();
+      setPlayTime('');
+      setRecordTime('');
+      setAudioData([]);
+      setAudioMessage({
+        ...audioMessage,
+        record: false,
+        recorded: false,
+        renderPlay: false,
+        uri: '',
+      });
+      setMessage({...message, type: 'text'});
+
+      // Optional: Delete file logic (if needed)
+      console.log('Voice deleted');
+    } catch (error) {
+      console.error('Error deleting voice:', error);
+    }
+  };
+  return (
+    <View style={styles.container}>
+      <Text
+        style={{color: '#fff'}}
+        onPress={() => setMessage({...message, type: 'voice'})}>
+        change to Voice
+      </Text>
+      <Text
+        style={{color: '#fff'}}
+        onPress={() => setMessage({...message, type: 'text'})}>
+        change to text
+      </Text>
+      <View style={styles.chatInput}>
+        {message.type == 'text' ? (
+          <>
+            <View style={styles.textInput}>
+              <TextInput
+                placeholder="Say hello ..."
+                placeholderTextColor={colors.body_text}
+                style={styles.input}
+                value={message.content}
+                onChangeText={text => {
+                  console.log(text.length);
+                  if (text.length < 1) {
+                    setMessage({...message, content: text, icon: 'microphone'});
+                    return;
+                  }
+                  setMessage({...message, type: 'text', content: text});
+                }}
+              />
+              <Icon name="camera" size={25} color={colors.body_text} />
+            </View>
+            <TouchableOpacity
+              style={styles.voiceBtn}
+              onPress={() => {
+                if (message.type == 'text') {
+                  sendMsg();
+                } else {
+                  // recordVoice();
+                }
+              }}>
+              <Icon
+                name={message.icon}
+                size={25}
+                color={colors.complimentary}
+              />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <View
+            style={{
+              flexDirection: 'row',
+              // backgroundColor: 'red',
+              alignItems: 'center',
+              width: '100%',
+            }}>
+            {audioMessage.recorded && (
+              <TouchableOpacity onPress={deleteVoice}>
+                <Icon name="trash-can" size={27} color={colors.complimentary} />
+              </TouchableOpacity>
+            )}
+            {audioMessage.recorded && (
+              <View style={styles.messageView}>
+                {audioMessage.renderPlay ? (
+                  <TouchableOpacity onPress={onStartPlay}>
+                    <Icon
+                      name={audioMessage.played ? 'pause' : 'play'}
+                      size={27}
+                      color={colors.accent}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <Text style={[appStyles.paragraph1, {marginLeft: 5}]}>
+                    {recordTime}
+                  </Text>
+                )}
+                {audioMessage.recorded && (
+                  <>
+                    <View style={{width: '70%', padding: 13}}>
+                      <View style={styles.waveForm}>
+                        <Svg height="18" width="100%">
+                          <Polyline
+                            points={audioData
+                              .map(
+                                (value, index) => `${index * 5},${18 - value}`,
+                              )
+                              .join(' ')}
+                            fill="none"
+                            stroke={colors.accent}
+                            strokeWidth="2"
+                          />
+                        </Svg>
+                      </View>
+                    </View>
+                    {!audioMessage.record && <Text>{playTime}</Text>}
+                  </>
+                )}
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.voiceBtn}
+              onPress={() => {
+                if (message.type == 'text') {
+                  sendMsg();
+                } else {
+                  // recordVoice();
+                }
+              }}>
+              <Icon
+                name={message.icon}
+                size={25}
+                color={colors.complimentary}
+              />
+            </TouchableOpacity>
+            {audioMessage.recorded && (
+              <TouchableOpacity style={[styles.voiceBtn]}>
+                <View>
+                  <Icon name={'send'} size={25} color={colors.complimentary} />
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // backgroundColor: '#fff',
+    // backgroundColor: colors.LG,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // padding: 30,
+  },
+  waveForm: {
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pauseBtn: {
+    width: 35,
+    height: 35,
+    borderColor: colors.accent,
+    alignItems: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+  },
+  messageView: {
+    width: '70%',
+    flexDirection: 'row',
+    backgroundColor: colors.complimentary,
+    alignItems: 'center',
+    borderRadius: 40,
+  },
+  chatInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+    // alignSelf: 'center',
+    width: '99%',
+  },
+  voiceBtn: {
+    width: 35,
+    marginLeft: 10,
+    height: 35,
+    borderRadius: 20,
+    backgroundColor: colors.accent,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  input: {
+    width: '80%',
+    padding: 16,
+    borderRadius: 40,
+    color: colors.complimentary,
+  },
+  textInput: {
+    flexDirection: 'row',
+    width: '86%',
+    alignItems: 'center',
+    backgroundColor: '#685670',
+    borderRadius: 40,
+    paddingLeft: 10,
+  },
+  // voiceBtn: {marginLeft: 20, flexDirection: 'row', alignItems: 'center'},
+});

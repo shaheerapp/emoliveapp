@@ -1,0 +1,150 @@
+import {colors} from '../../../../../styles/colors';
+import {Platform, StyleSheet} from 'react-native';
+import appStyles from '../../../../../styles/styles';
+import {useSelector} from 'react-redux';
+const liveStyles = StyleSheet.create({
+  chatAvatar: {width: 50, height: 50, borderRadius: 25},
+  sofa: {
+    width: 60,
+    height: 60,
+    borderRadius: 35,
+    backgroundColor: '#874975',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputBox: {
+    padding: 10,
+    backgroundColor: '#11132c',
+    color: colors.complimentary,
+    borderWidth: 1,
+    width: '60%',
+    borderStartEndRadius: 48,
+    borderRadius: 50,
+    alignSelf: 'flex-start',
+    borderStartStartRadius: 48,
+  },
+  action: {
+    flexDirection: 'row',
+    marginLeft: 10,
+    width: '36%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  liveStates: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
+    justifyContent: 'space-between',
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: colors.LG,
+  },
+  sheetAvatar: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: colors.lines,
+  },
+  sheetUser: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '60%',
+    marginVertical: 20,
+  },
+  followBtn: {
+    width: '45%',
+    borderRadius: 25,
+    padding: 20,
+    borderColor: colors.complimentary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sheetStatus: {
+    flexDirection: 'row',
+    width: '70%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  points: {
+    flexDirection: 'row',
+    backgroundColor: colors.semantic,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // width: 60,
+    paddingHorizontal: 10,
+    // height: 20,
+  },
+  sheetAction: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 30,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  btn1: {
+    // position: 'absolute',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    // bottom: 10,
+    // bottom: Platform.OS == 'ios' ? 30 : 10,
+    borderRadius: 15,
+    justifyContent: 'space-between',
+  },
+  usersList: {
+    marginTop: 20,
+  },
+  emptySeat: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    borderColor: colors.accent,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  sheetBtnTxt: {
+    ...appStyles.regularTxtMd,
+    color: colors.body_text,
+    textAlign: 'center',
+  },
+  container: {
+    flex: 1,
+    // backgroundColor: 'red',
+  },
+  heading: {
+    ...appStyles.headline,
+    color: colors.complimentary,
+    textAlign: 'center',
+    alignSelf: 'center',
+  },
+  image: {
+    flex: 1,
+    // padding: 10,
+  },
+  reportBtn: {
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    borderColor: colors.body_text,
+    borderWidth: 1,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    top: 30,
+    left: 30,
+    paddingVertical: 5,
+  },
+  users: {
+    flexDirection: 'row',
+    width: '99%',
+    justifyContent: 'space-around',
+  },
+});
+
+export default liveStyles;

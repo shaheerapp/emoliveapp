@@ -1,0 +1,345 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+} from 'react-native';
+import React, {useCallback, useRef, useState} from 'react';
+import {colors} from '../../../styles/colors';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import appStyles from '../../../styles/styles';
+import Cards from '../../../assets/svg/games/cards.svg';
+import Greedy from '../../../assets/svg/games/greedy.svg';
+import Frame from '../../../assets/svg/games/frame.svg';
+import Lucky from '../../../assets/svg/games/lucky.svg';
+import Roulette from '../../../assets/svg/games/Roulette.svg';
+import CardGp from '../../../assets/svg/games/cardGp.svg';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+
+export default function PlayCenter({navigation}) {
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [sheet, setSheet] = useState<boolean>(false);
+  const [sheetType, setSheetType] = useState<string | null>('tools');
+
+  // Function to handle open Bottom Sheet
+  const handleOpenSheet = useCallback(() => {
+    setSheet(true);
+    bottomSheetRef.current?.expand();
+  }, []);
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    // console.log('handleSheetChanges', index);
+    if (index < 0) setSheet(false);
+  }, []);
+  return (
+    <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: 'row',
+          // justifyContent: 'space-between',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '99%',
+          marginTop: Platform.OS == 'ios' ? 60 : 40,
+        }}>
+        <View style={{width: '38%'}} />
+        <View
+          style={{
+            width: '62%',
+
+            alignSelf: 'center',
+            flexDirection: 'row',
+            // justifyContent:"center",
+            justifyContent: 'space-between',
+          }}>
+          <Text style={styles.heading}>Play Center</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="close" size={24} color={colors.complimentary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 50,
+          justifyContent: 'space-between',
+        }}>
+        <TouchableOpacity style={styles.game} onPress={handleOpenSheet}>
+          <Cards style={{marginTop: 40}} width={65} height={59} />
+          <Text style={styles.gameName}>Teen Pati</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.game}
+          onPress={() => navigation.navigate('ScoreCard')}>
+          <Lucky style={{marginTop: 40}} width={65} height={59} />
+          <Text style={styles.gameName}>Lucky 77</Text>
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 40,
+          justifyContent: 'space-between',
+        }}>
+        <TouchableOpacity
+          style={styles.game}
+          onPress={() => navigation.navigate('ScoreCard')}>
+          <Greedy style={{marginTop: 40}} width={65} height={59} />
+          <Text style={styles.gameName}>Greedy</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.game}
+          onPress={() => navigation.navigate('ScoreCard')}>
+          <Roulette style={{marginTop: 40}} width={65} height={59} />
+          <Text style={styles.gameName}>Roulette</Text>
+        </TouchableOpacity>
+      </View>
+      <BottomSheet
+        index={-1}
+        enablePanDownToClose={true}
+        snapPoints={['60%']}
+        ref={bottomSheetRef}
+        handleStyle={{
+          backgroundColor: colors.LG,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.complimentary,
+        }}
+        onChange={handleSheetChanges}>
+        <BottomSheetView style={styles.contentContainer}>
+          <ImageBackground
+            style={{
+              //   flex: 1,
+              width: '100%',
+              height: '100%',
+              //   marginTop: 100,
+            }}
+            source={require('../../../assets/images/games/border.png')}>
+            <View
+              style={{
+                borderBottomColor: '#000000',
+                borderBottomWidth: 2,
+                backgroundColor: '#B95317',
+                padding: 20,
+              }}>
+              <Text
+                style={[
+                  appStyles.title1,
+                  {color: colors.complimentary, textAlign: 'center'},
+                ]}>
+                Teen Patti
+              </Text>
+            </View>
+            <View
+              style={{
+                padding: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <CardGp />
+              <Frame />
+
+              {/* <Text>Cards in row</Text> */}
+            </View>
+            <View style={{marginVertical: 30}}>
+              <View style={{alignSelf: 'flex-end', marginRight: 40}}>
+                <Image
+                  style={{height: 80, width: 60}}
+                  source={require('../../../assets/images/games/chair.png')}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-around',
+                }}>
+                <View style={styles.sheetCategory}>
+                  <View style={styles.scoreHead}>
+                    <Text style={styles.sheetCategoryTxt}>A</Text>
+                  </View>
+                  <View style={styles.scoreSection}>
+                    <Text style={styles.score}>Pot: 1435k</Text>
+                  </View>
+                  <View style={styles.playerScore}>
+                    <Text style={styles.score}>You: 0</Text>
+                  </View>
+                </View>
+
+                <View style={styles.sheetCategory}>
+                  <View style={styles.scoreHead}>
+                    <Text style={styles.sheetCategoryTxt}>B</Text>
+                  </View>
+                  <View style={styles.scoreSection}>
+                    <Text style={styles.score}>Pot: 1435k</Text>
+                  </View>
+                  <View style={styles.playerScore}>
+                    <Text style={styles.score}>You: 0</Text>
+                  </View>
+                </View>
+                <View style={styles.sheetCategory}>
+                  <View style={styles.scoreHead}>
+                    <Text style={styles.sheetCategoryTxt}>C</Text>
+                  </View>
+                  <View style={styles.scoreSection}>
+                    <Text style={styles.score}>Pot: 1435k</Text>
+                  </View>
+                  <View style={styles.playerScore}>
+                    <Text style={styles.score}>You: 0</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={{flexDirection: 'row', padding: 20}}>
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: '#E2983A',
+                }}>
+                <Text
+                  style={[
+                    appStyles.regularTxtMd,
+                    {color: colors.complimentary},
+                  ]}>
+                  170 TOP-up{'>'}{' '}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '70%',
+                  justifyContent: 'space-around',
+                  alignItems: 'center',
+                }}>
+                <Text style={styles.catText}>100</Text>
+                <Text style={styles.catText}>1000</Text>
+                <View>
+                  <Image
+                    style={{height: 25, width: 25}}
+                    source={require('../../../assets/images/games/bag.png')}
+                  />
+                </View>
+                {/* <View>5k</View> */}
+                <Text style={styles.catText}>10k</Text>
+                <Text style={styles.catText}>50k</Text>
+              </View>
+            </View>
+          </ImageBackground>
+        </BottomSheetView>
+      </BottomSheet>
+      {/* <Text>ScoreCard</Text> */}
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.dark_gradient,
+    padding: 16,
+  },
+  tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '99%',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderColor: colors.lines,
+    paddingRight: 10,
+    paddingBottom: 15,
+    marginVertical: 10,
+  },
+  heading: {
+    ...appStyles.headline,
+    color: colors.complimentary,
+    textAlign: 'center',
+  },
+  playerScore: {
+    backgroundColor: colors.complimentary,
+    // scoreSection,
+    paddingVertical: 5,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+  },
+  sheetCategory: {
+    width: '20%',
+    borderRadius: 18,
+    // backgroundColor: 'red',
+  },
+  sheetCategoryTxt: {
+    ...appStyles.smallM,
+    color: colors.complimentary,
+    textAlign: 'center',
+  },
+  catText: {
+    ...appStyles.small,
+    color: colors.complimentary,
+  },
+  scoreHead: {
+    backgroundColor: colors.dominant,
+    // borderRadius: 30,
+    borderTopRightRadius: 6,
+    borderTopLeftRadius: 6,
+    paddingVertical: 5,
+  },
+  scoreSection: {
+    paddingVertical: 5,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.store,
+    backgroundColor: colors.complimentary,
+  },
+  score: {
+    ...appStyles.smallM,
+    color: colors.body_text,
+    textAlign: 'center',
+  },
+  icon: {
+    width: '50%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 16,
+  },
+  game: {
+    borderWidth: 1,
+    borderColor: colors.body_text,
+    justifyContent: 'center',
+    borderRadius: 20,
+    alignItems: 'center',
+    width: '45%',
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: colors.golden,
+  },
+  gameName: {
+    ...appStyles.paragraph1,
+    color: colors.complimentary,
+    marginVertical: 20,
+  },
+  profile: {
+    flexDirection: 'row',
+    marginLeft: 10,
+  },
+  btn: {
+    marginRight: 10,
+    backgroundColor: colors.lines,
+    height: 40,
+    width: 90,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 5,
+    borderRadius: 8,
+  },
+  btnText: {
+    textAlign: 'center',
+    color: colors.complimentary,
+    ...appStyles.bodyMd,
+  },
+});
