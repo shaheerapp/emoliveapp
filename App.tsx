@@ -8,11 +8,11 @@ import {
 } from 'react-native';
 import React from 'react';
 import Routes from './src/Routes/Index';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {store} from './src/store/store';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import AppContext from './src/Context/AppContext';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
+import store from './src/store/store';
 
 // Replace <TOKEN> with your actual GitHub token
 
@@ -24,13 +24,13 @@ export default function App() {
     Alert.alert(
       'Restart Required',
       'The Emo Live needs to restart to apply set Arabic settings.',
-      [{text: 'OK', onPress: () => BackHandler.exitApp()}],
+      [{ text: 'OK', onPress: () => BackHandler.exitApp() }],
     );
   }
 
   return (
     <GestureHandlerRootView>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <Provider store={store}>
           <AppContext>
             <Routes />

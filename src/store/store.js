@@ -1,4 +1,4 @@
-import {configureStore} from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import usersReducer from './slice/usersSlice';
 import chatReducer from './slice/chatSlice';
 import notificationReducer from './slice/notificationSlice';
@@ -8,7 +8,7 @@ import accountReducer from './slice/accountSlice';
 import battleReducer from './slice/PK/battleSlice';
 // import {composeWithDevTools} from 'redux-devtools-extension';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     users: usersReducer,
     account: accountReducer,
