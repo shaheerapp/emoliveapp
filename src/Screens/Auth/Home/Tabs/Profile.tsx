@@ -13,6 +13,8 @@ import {
   Platform,
   Modal,
   NativeModules,
+  ImageBackground,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,6 +31,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosInstance from '../../../../Api/axiosConfig';
 import envVar from '../../../../config/envVar';
 import {useAppContext} from '../../../../Context/AppContext';
+import {IMAGES} from '../../../../assets/images';
+import {actionItems} from '../../../../utils/data';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Search({navigation}) {
@@ -150,8 +154,24 @@ export default function Search({navigation}) {
   const temp = async () => {
     console.log('i am clicked');
   };
+
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.iconBtn}
+      onPress={() => {
+        if (item.onPress) item.onPress();
+        else if (item.navigation) navigation.navigate(item.navigation);
+      }}>
+      <Image source={item.icon} style={styles.icon} />
+      <Text style={[appStyles.regularTxtMd, {color: colors.complimentary}]}>
+        {item.title}
+      </Text>
+    </TouchableOpacity>
+  );
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('./../../../../assets/images/settingBg.png')}
+      style={styles.container}>
       {loading ? (
         <ActivityIndicator
           style={appStyles.indicatorStyle}
@@ -292,9 +312,16 @@ export default function Search({navigation}) {
               </View>
             </View>
             {/* info end */}
-
+            {/* const data=[{title:"Message",icon:IMAGES.msg,navigation:"Inbox"},{title:"Agencies",icon:IMAGES.agency,navigation:"Agency"},{title:"Family",icon:IMAGES.family,navigation:"JoinAgency"}] */}
             <View style={{marginTop: 20}}>
-              <View style={styles.actionBtn}>
+              <FlatList
+                data={actionItems}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={3}
+                contentContainerStyle={styles.grid}
+              />
+              {/* <View style={styles.actionBtn}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Inbox')}
                   style={styles.iconBtn}>
@@ -342,8 +369,8 @@ export default function Search({navigation}) {
                   </View>
                   <Text style={styles.actionTxr}>Family</Text>
                 </TouchableOpacity>
-              </View>
-              <View style={styles.iconsRow}>
+              </View> */}
+              {/* <View style={styles.iconsRow}>
                 <TouchableOpacity
                   style={styles.iconBtn}
                   onPress={() => navigation.navigate('Coin')}>
@@ -446,7 +473,7 @@ export default function Search({navigation}) {
                   </View>
                   <Text style={styles.actionTxr}>Check For Updates</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
           </ScrollView>
         </>
@@ -484,7 +511,7 @@ export default function Search({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -509,6 +536,9 @@ const styles = StyleSheet.create({
   },
   profile: {
     flexDirection: 'row',
+  },
+  grid: {
+    padding: 10,
   },
   secondRow: {
     flexDirection: 'row',
@@ -624,7 +654,20 @@ const styles = StyleSheet.create({
     width: '60%',
     justifyContent: 'space-between',
   },
-  iconBtn: {alignItems: 'center', width: '30%'},
+  iconBtn: {
+    alignItems: 'center',
+    // width: '30%',÷
+    flexDirection: 'row',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 100,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    gap: 5,
+    borderColor: 'white',
+    marginVertical: 7,
+    marginRight: 5,
+  },
   level: {
     backgroundColor: colors.semantic,
     borderRadius: 25,
@@ -684,14 +727,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lines,
   },
   icon: {
-    borderWidth: 1,
-    width: 90,
-    height: 90,
+    // borderWidth: 1,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     // alignSelf: 'center',
-    borderColor: '#494759',
+    // borderColor: '#494759',
     // backgroundColor:
   },
 
