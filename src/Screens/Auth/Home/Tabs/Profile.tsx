@@ -1,35 +1,31 @@
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Alert,
   ScrollView,
   Image,
-  NativeModule,
   LayoutAnimation,
   Platform,
   Modal,
-  NativeModules,
+  ImageBackground,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import hotUpdate from 'react-native-ota-hot-update';
 
-import IconF from 'react-native-vector-icons/FontAwesome6';
 import {colors} from '../../../../styles/colors';
 import {ChatClient} from 'react-native-agora-chat';
 import appStyles from '../../../../styles/styles';
-import {formatNumber} from '../../../../utils/generalScript';
-import scripts from '../../../../scripts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import axiosInstance from '../../../../Api/axiosConfig';
 import envVar from '../../../../config/envVar';
 import {useAppContext} from '../../../../Context/AppContext';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import {IMAGES} from '../../../../assets/images';
+import {actionItems, characterItems, otherItems} from '../../../../utils/data';
 
 export default function Search({navigation}) {
   const [progress, setProgress] = useState(100);
@@ -38,7 +34,6 @@ export default function Search({navigation}) {
   const {user, setUser} = userAuthInfo;
   const chatClient = ChatClient.getInstance();
   const {token} = tokenMemo;
-  const [error, setError] = useState(null);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -150,8 +145,26 @@ export default function Search({navigation}) {
   const temp = async () => {
     console.log('i am clicked');
   };
+
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.iconBtn}
+      onPress={() => {
+        if (item.onPress) item.onPress();
+        else if (item.navigation && !(item.tittle == 'Terms'))
+          navigation.navigate(item.navigation);
+      }}>
+      <Image source={item.icon} style={styles.icon} />
+      <Text style={[appStyles.bodyMd, {color: colors.complimentary}]}>
+        {item.title}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('./../../../../assets/images/settingBg.png')}
+      style={styles.container}>
       {loading ? (
         <ActivityIndicator
           style={appStyles.indicatorStyle}
@@ -159,297 +172,217 @@ export default function Search({navigation}) {
           color={colors.complimentary}
         />
       ) : (
-        <>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('VIP')}
-            style={styles.vipBtn}>
-            <Icon name="crown" color={colors.yellow} size={25} />
-            <Text style={[appStyles.bodyMd, {color: colors.yellow}]}>
-              Check VIP
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.refreshBtn}>
-            {/* <TouchableOpacity onPress={refreshUser} style={styles.refresh}>
-              <Icon name="refresh" color={colors.complimentary} size={20} />
-            </TouchableOpacity> */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate('EditProfile')}
-              style={styles.editBtn}>
-              <Icon
-                name="account-edit"
-                color={colors.complimentary}
-                size={20}
-              />
-            </TouchableOpacity>
-          </View>
-
+        <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
           <View
             style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-              marginTop: Platform.OS == 'ios' ? 50 : 10,
+              marginTop: Platform.OS == 'ios' ? 45 : 10,
+              width: '100%',
             }}>
-            <Image
-              style={appStyles.userAvatar}
-              source={
-                user.avatar
-                  ? {
-                      uri: envVar.API_URL + 'display-avatar/' + user.id,
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                      },
-                    }
-                  : require('../../../../assets/images/place.jpg')
-              }
-            />
-            <Text style={styles.userText} onPress={getUnreadMessages}>
+            <View style={styles.imageContainer}>
+              <View style={[appStyles.userAvatar, styles.logoContainer]}>
+                <Image
+                  style={{width: '100%', height: '100%'}}
+                  source={
+                    user.avatar
+                      ? {
+                          uri: envVar.API_URL + 'display-avatar/' + user.id,
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
+                      : require('../../../../assets/images/place.jpg')
+                  }
+                />
+              </View>
+              <Image style={{width: 90, height: 50}} source={IMAGES.logo} />
+            </View>
+            <Text
+              style={[appStyles.display1, {color: 'white'}]}
+              onPress={getUnreadMessages}>
               {user.first_name + ' ' + user.last_name}{' '}
             </Text>
             <View style={styles.userInfo}>
-              <Text style={styles.userDesc}>ID:{user.id}</Text>
+              <Text style={styles.userDesc}>{user?.email}</Text>
+              <View
+                style={{
+                  width: 1.2,
+                  height: 30,
+                  backgroundColor: 'white',
+                  alignSelf: 'center',
+                }}
+              />
+
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Icon
-                  style={{marginTop: 5}}
-                  name="google-maps"
-                  color={colors.complimentary}
-                  size={25}
+                <Image
+                  style={{width: 15, height: 15}}
+                  source={IMAGES.send}
+                  resizeMode="contain"
                 />
 
                 <Text style={[styles.userDesc, {marginLeft: 2}]}>
                   {user.address ? user.address : 'Please Provide'}
                 </Text>
+                <Image
+                  style={{width: 15, height: 15}}
+                  source={IMAGES.arrowDown}
+                  resizeMode="contain"
+                />
               </View>
             </View>
 
-            <View style={styles.accountInfo}>
-              <View style={styles.gender}>
-                <Icon
-                  name={
-                    ['male,female'].includes(user.gender)
-                      ? 'gender-' + user.gender
-                      : 'gender-male-female'
-                  }
-                  color={colors.complimentary}
-                  size={20}
-                />
-                <Text style={styles.genderTxt}>{user.gender}</Text>
+            <View style={[styles.accountInfo, {width: '90%'}]}>
+              <View style={[styles.gender, {backgroundColor: 'white'}]}>
+                <Text style={[styles.levelTxt, {color: colors.dominant}]}>
+                  {user.gender}
+                </Text>
               </View>
-              <View style={styles.level}>
-                <Text style={styles.levelTxt}>Lv:17</Text>
+              <View style={[styles.gender, {backgroundColor: colors.green}]}>
+                <Text style={[styles.levelTxt, {color: colors.white}]}>
+                  ID:17
+                </Text>
               </View>
-              <View
-                style={[
-                  styles.gender,
-                  {
-                    backgroundColor: colors.LG,
-                    borderColor: colors.lines,
-                    borderWidth: 1,
-                    borderRadius: 25,
-                  },
-                ]}>
+              <View style={[styles.gender, {backgroundColor: colors.yellow}]}>
                 {/* <Icon name="security" color="#fff" size={20} /> */}
-                <Text style={styles.infoHeading}>Top-up Agent..</Text>
+                <Text style={[styles.levelTxt, {color: colors.white}]}>
+                  Top-up Agent..
+                </Text>
+                <Image
+                  style={{width: 15, height: 15}}
+                  source={IMAGES.arrow}
+                  resizeMode="contain"
+                  tintColor={colors.white}
+                />
               </View>
+              <View style={[styles.checkVip]}>
+                <Text
+                  style={[
+                    styles.levelTxt,
+                    {color: 'white', fontWeight: '900'},
+                  ]}>
+                  Check VIP
+                </Text>
+                <View style={{position: 'absolute', right: -1.5, top: -2}}>
+                  <Image
+                    style={{width: 23, height: 23}}
+                    source={IMAGES.crown}
+                    resizeMode="contain"
+                    // tintColor={colors.white}
+                  />
+                </View>
+              </View>
+              <Image
+                style={{width: 25, height: 25}}
+                source={IMAGES.mic}
+                resizeMode="contain"
+              />
             </View>
           </View>
-          <ScrollView>
-            {/* account */}
-            <View>
-              <View style={styles.account}>
-                <View style={styles.info}>
-                  <Text style={styles.accountStatus}>
-                    {formatNumber(user.followers)}
-                  </Text>
-                  <Text style={styles.infoText}>Fans</Text>
-                </View>
-                <View style={styles.info}>
-                  <Text style={styles.accountStatus}>
-                    {formatNumber(user.following)}
-                  </Text>
-                  <Text style={styles.infoText}>Following</Text>
-                </View>
-                <View style={styles.info}>
-                  <Text style={styles.accountStatus}>
-                    {formatNumber(user.friends)}
-                  </Text>
-                  <Text style={styles.infoText}>Friends</Text>
-                </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '80%',
+            }}>
+            {characterItems.map((item, index) => (
+              <View key={index} style={styles.item}>
+                <Image
+                  source={item.icon}
+                  style={item.title ? styles.ceoimage : styles.image}
+                  resizeMode="contain"
+                />
+                {item.title ? (
+                  <Text style={styles.title}>{item.title}</Text>
+                ) : null}
               </View>
-              <View style={styles.secondRow}>
-                <View style={styles.info}>
-                  <Text style={styles.accountStatus}>
-                    {formatNumber(user.wallet?.diamonds)}
-                  </Text>
-                  <Text style={styles.infoText}>Diamond</Text>
-                </View>
-                <View style={styles.info}>
-                  <Text style={styles.accountStatus}>
-                    {formatNumber(user.wallet?.beans)}
-                  </Text>
-                  {/* <Text style={styles.accountStatus}>247.4k</Text> */}
-                  <Text style={styles.infoText}>Beans</Text>
-                </View>
-              </View>
+            ))}
+          </View>
+          <ImageBackground
+            source={IMAGES.topGradient}
+            resizeMode="contain"
+            style={styles.gradient}>
+            <View style={styles.gradientView}>
+              <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                14
+              </Text>
+              <Text style={[appStyles.title1, styles.topgradientItem]}>
+                Fans
+              </Text>
             </View>
-            {/* info end */}
+            <View style={styles.gradientView}>
+              <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                40
+              </Text>
+              <Text style={[appStyles.title1, styles.topgradientItem]}>
+                Following
+              </Text>
+            </View>
+            <View style={styles.gradientView}>
+              <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                44
+              </Text>
+              <Text style={[appStyles.title1, styles.topgradientItem]}>
+                Friends
+              </Text>
+            </View>
+          </ImageBackground>
+          <ImageBackground
+            source={IMAGES.bottomGradient}
+            resizeMode="contain"
+            style={[styles.gradient, styles.bottomgradient]}>
+            <View style={styles.gradientView}>
+              <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                40
+              </Text>
+              <Text style={[appStyles.title1, styles.topgradientItem]}>
+                Diamonds
+              </Text>
+            </View>
+            <View style={styles.gradientView}>
+              <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                44
+              </Text>
+              <Text style={[appStyles.title1, styles.topgradientItem]}>
+                Beans
+              </Text>
+            </View>
+          </ImageBackground>
+          <View>
+            <View style={styles.agentBtn}>
+              <Image
+                source={IMAGES.arrowUp}
+                style={{
+                  width: 18,
+                  height: 8,
+                  alignSelf: 'center',
+                  tintColor: colors.white,
+                }}
+              />
+              <Text style={[appStyles.headline, styles.topgradientItem]}>
+                Top Up Agent
+              </Text>
+            </View>
+          </View>
+          {/* account */}
 
-            <View style={{marginTop: 20}}>
-              <View style={styles.actionBtn}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Inbox')}
-                  style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="message-processing-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Messages</Text>
-                  {unreadMessageCount > 0 && (
-                    <View style={styles.unreadMessages}>
-                      <Text
-                        style={[
-                          appStyles.regularTxtMd,
-                          {color: colors.complimentary},
-                        ]}>
-                        {unreadMessageCount}
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Agency')}
-                  style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="account-group"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Agencies</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => navigation.navigate('JoinAgency')}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="weight-lifter"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Family</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.iconsRow}>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => navigation.navigate('Coin')}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="wallet"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Wallet</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => navigation.navigate('JoinAgency')}>
-                  <View style={styles.icon}>
-                    <IconF
-                      name="handshake-simple"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Join Agency</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Level')}
-                  style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon name="star" size={33} color={colors.complimentary} />
-                  </View>
-                  <Text style={styles.actionTxr}>Level</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.iconsRow}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Ranking')}
-                  style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="message-processing-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Ranking</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconBtn} onPress={temp}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="book-open-page-variant-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Terms</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="bag-checked"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Baggage</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.iconsRow}>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => navigation.navigate('Settings')}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="message-processing-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Settings</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconBtn}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="book-open-page-variant-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Terms</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={onCheckGitVersion}>
-                  <View style={styles.icon}>
-                    <Icon
-                      name="cloud-download-outline"
-                      size={33}
-                      color={colors.complimentary}
-                    />
-                  </View>
-                  <Text style={styles.actionTxr}>Check For Updates</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-        </>
+          <View style={{marginTop: -20}}>
+            <FlatList
+              data={actionItems}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={4}
+              contentContainerStyle={styles.grid}
+            />
+            <Text style={[appStyles.title1, {color: colors.complimentary}]}>
+              Others
+            </Text>
+            <FlatList
+              data={otherItems}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={4}
+              contentContainerStyle={styles.grid}
+            />
+          </View>
+        </ScrollView>
       )}
       <Modal visible={updateModal} transparent={true} animationType="slide">
         {/* Backdrop */}
@@ -484,7 +417,7 @@ export default function Search({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -494,10 +427,64 @@ const styles = StyleSheet.create({
     backgroundColor: colors.LG,
     padding: 10,
   },
-
-  image: {
-    flex: 1,
+  imageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
+  agentBtn: {
+    borderRadius: 10,
+    paddingVertical: 7,
+    backgroundColor: colors.green,
+    borderWidth: 3,
+    borderColor: colors.white,
+    width: '38%',
+    alignSelf: 'center',
+    top: -20,
+  },
+  logoContainer: {
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: colors.semantic,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  gradient: {
+    width: '100%',
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  bottomgradient: {
+    top: -20,
+    width: '100%',
+    justifyContent: "center",
+    height: 50,
+    marginVertical: 10,gap:35
+  },
+  item: {
+    marginHorizontal: 4,
+    alignItems: 'center',
+  },
+  gradientView: {top: 4},
+  topgradientItem: {textAlign: 'center', color: colors.white},
+  image: {
+    width: 35,
+    height: 35,
+    bottom: -5,
+  },
+  ceoimage: {
+    width: 35,
+    height: 35,
+  },
+  title: {
+    marginTop: 1,
+    fontSize: 8,
+    textAlign: 'center',
+    color: colors.white,
+  },
+
   userSection: {
     marginTop: 20,
     borderBottomColor: 'grey',
@@ -507,8 +494,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 10,
   },
+
+  checkVip: {
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: '#949494',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+  },
   profile: {
     flexDirection: 'row',
+  },
+  grid: {
+    paddingVertical: 15,
   },
   secondRow: {
     flexDirection: 'row',
@@ -518,21 +519,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '70%',
   },
-
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Custom RGBA backdrop color
     justifyContent: 'center',
     alignItems: 'center',
-    // alignSelf: 'center',
   },
   modalView: {
-    // width: 300,
     padding: 20,
     backgroundColor: colors.LG,
     alignSelf: 'center',
     width: '90%',
-    // minWidth
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -566,17 +563,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     right: 20,
-    // justifyContent: 'space-between',
-    // width: '25%',
   },
   levelTxt: {
-    color: colors.dominant,
-    ...appStyles.bodyRg,
+    fontSize: 12,
+    fontWeight: '600',
+    fontFamily: 'Kanit',
   },
   accountInfo: {
+    marginVertical: 5,
     flexDirection: 'row',
-    marginTop: 20,
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   unreadMessages: {
@@ -591,11 +587,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   gender: {
-    backgroundColor: 'grey',
-    borderRadius: 15,
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'center',
-    padding: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    borderRadius: 20,
   },
   accountStatus: {
     ...appStyles.headline2,
@@ -606,7 +603,7 @@ const styles = StyleSheet.create({
     marginLeft: 3,
     marginTop: 2,
     ...appStyles.bodyRg,
-    color: colors.complimentary,
+    color: colors.purple,
     textTransform: 'capitalize',
   },
   account: {
@@ -618,13 +615,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   userInfo: {
-    marginTop: 5,
+    // marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
     width: '60%',
     justifyContent: 'space-between',
   },
-  iconBtn: {alignItems: 'center', width: '30%'},
+  iconBtn: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 100,
+    paddingVertical: 7,
+    paddingHorizontal: 5,
+    gap: 5,
+    borderColor: 'white',
+    marginVertical: 7,
+    marginRight: 5,
+  },
   level: {
     backgroundColor: colors.semantic,
     borderRadius: 25,
@@ -684,21 +693,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lines,
   },
   icon: {
-    borderWidth: 1,
-    width: 90,
-    height: 90,
+    // borderWidth: 1,
+    width: 25,
+    height: 25,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     // alignSelf: 'center',
-    borderColor: '#494759',
+    // borderColor: '#494759',
     // backgroundColor:
   },
 
   userText: {
     ...appStyles.headline,
     marginTop: 10,
-    textAlign: 'center',
+    // textAlign: 'center',
     color: colors.complimentary,
   },
   userDesc: {

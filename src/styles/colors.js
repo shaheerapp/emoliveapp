@@ -28,4 +28,8 @@ export const colors = {
 
   // games
   store: '#868791',
+  purple: '#9C58A3',
+  white: '#FFFFFF',
+  green:"#4CED64",
+  yellow:"#FFB20D"
 };
