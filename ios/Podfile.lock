@@ -1432,7 +1432,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-ota-hot-update (2.2.9):
+  - react-native-ota-hot-update (2.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2466,7 +2466,7 @@ SPEC CHECKSUMS:
   react-native-fbsdk-next: 52f81e60eb3e8e0e06cf9728b4572d3509ca9d01
   react-native-image-picker: 91f4e8dd458db2acdb278479e960bc224cbf0217
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-ota-hot-update: 37cb8d6c69b9500a9f999c819961b28b14c1ac0b
+  react-native-ota-hot-update: 1cc292533d0818e9bf4b7afb7998bbb6020c90be
   react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
   React-nativeconfig: 539ff4de6ce3b694e8e751080568c281c84903ce
   React-NativeModulesApple: 702246817c286d057e23fe4b1302019796e62521
