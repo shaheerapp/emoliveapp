@@ -154,7 +154,7 @@ export default function Search({navigation}) {
         else if (item.navigation && !(item.tittle == 'Terms'))
           navigation.navigate(item.navigation);
       }}>
-      <Image source={item.icon} style={styles.icon} />
+      <Image source={item.icon} style={styles.icon} resizeMode='contain'/>
       <Text style={[appStyles.bodyMd, {color: colors.complimentary}]}>
         {item.title}
       </Text>

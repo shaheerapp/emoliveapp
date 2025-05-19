@@ -24,4 +24,8 @@ export const IMAGES = {
   topGradient: require('./topGradient.png'),
   bglevel: require('./bglevel.png'),
   level: require('./level.png'),
+  Baggages: require('./Baggages.png'),
+  terms: require('./Terms.png'),
+  store: require('./store.png'),
+ 
 };
