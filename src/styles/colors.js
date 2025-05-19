@@ -31,5 +31,7 @@ export const colors = {
   purple: '#9C58A3',
   white: '#FFFFFF',
   green:"#4CED64",
-  yellow:"#FFB20D"
+  yellow:"#FFB20D",
+  secondary:"#4CC8ED",
+  pimary:"#9C58A3"
 };

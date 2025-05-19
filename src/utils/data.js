@@ -10,15 +10,15 @@ export const actionItems = [
 ];
 export const otherItems = [
   {title: 'Ranking', icon: IMAGES.ranking, navigation: 'Ranking'},
-  {title: 'Terms', icon: IMAGES.agency, navigation: ''},
-  {title: 'Baggage', icon: IMAGES.family, navigation: ''},
+  {title: 'Terms', icon: IMAGES.terms, navigation: ''},
+  {title: 'Baggage', icon: IMAGES.Baggages, navigation: ''},
   {title: 'Settings', icon: IMAGES.wallet, navigation: 'Settings'},
   {
     title: 'Check For Update',
     icon: IMAGES.refresh,
     navigation: 'onCheckGitVersion',
   },
-  {title: 'My Store', icon: IMAGES.arrow, navigation: ''},
+  {title: 'My Store', icon: IMAGES.store, navigation: ''},
 ];
 export const characterItems = [
   {title: 'Agency Ower', icon: IMAGES.agencyOwner},

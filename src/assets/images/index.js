@@ -22,4 +22,10 @@ export const IMAGES = {
   arrowUp: require('./arrowUp.png'),
   bottomGradient: require('./bottomGradient.png'),
   topGradient: require('./topGradient.png'),
+  bglevel: require('./bglevel.png'),
+  level: require('./level.png'),
+  Baggages: require('./Baggages.png'),
+  terms: require('./Terms.png'),
+  store: require('./store.png'),
+ 
 };
