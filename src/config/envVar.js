@@ -1,7 +1,6 @@
 export default env = {
   API_URL: 'https://www.emolivestreaming.online/api/',
   BACKED_URL: 'https://www.emolivestreaming.online/',
-  BACKED_URL: 'https://www.emolivestreaming.online/',
   LOCAL_API_URL: 'http://localhost:8000/api/',
   AGORA_KEY: '611258830#1451592',
   AGORA_CHAT_KEY: '',
@@ -9,6 +8,7 @@ export default env = {
   WEB_CLIENT_ID: '', // for google sign in
   IOS_CLIENT_ID: '', // for google sign in
   REVERB_KEY: 'xjceygqczxvyasqh0c2d',
+  JWT_SECRET: 'MzansiSuperSecretKey123!@#',
 };
 
 // AGORA_APP_CERTIFICATE=9f392b5e26ad4b6b8a0a4830d00c59a6

@@ -8,28 +8,29 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import React, {useState, useLayoutEffect} from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import appStyles from '../../../../styles/styles';
-import {colors} from '../../../../styles/colors';
+import { colors } from '../../../../styles/colors';
 import axiosInstance from '../../../../Api/axiosConfig';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   setChatUser,
   updateUsers,
   updateVisitProfile,
 } from '../../../../store/slice/usersSlice';
 import envVar from '../../../../config/envVar';
-import {formatNumber} from '../../../../utils/generalScript';
-import {useAppContext} from '../../../../Context/AppContext';
+import { formatNumber } from '../../../../utils/generalScript';
+import { useAppContext } from '../../../../Context/AppContext';
 
-export default function UserProfile({navigation}) {
+export default function UserProfile({ navigation }) {
   const dispatch = useDispatch();
-  const {userAuthInfo, tokenMemo} = useAppContext();
-  const {user} = userAuthInfo;
-  const {token} = tokenMemo;
+  const { userAuthInfo, tokenMemo } = useAppContext();
+  const { user } = userAuthInfo;
+  const { token } = tokenMemo;
   const [error, setError] = useState('');
-  const {visitProfile} = useSelector((state: any) => state.users);
+  const { visitProfile } = useSelector((state: any) => state.users);
+
 
   const [loading, setLoading] = useState(false);
   const followUser = async () => {
@@ -79,11 +80,11 @@ export default function UserProfile({navigation}) {
           source={
             visitProfile.avatar
               ? {
-                  uri: envVar.API_URL + 'display-avatar/' + visitProfile.id,
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
+                uri: envVar.API_URL + 'display-avatar/' + visitProfile.id,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
               : require('../../../../assets/images/place.jpg')
           }
         />
@@ -108,11 +109,11 @@ export default function UserProfile({navigation}) {
         </View>
       </View>
       {error && (
-        <Text style={[appStyles.errorText, {marginVertical: 10}]}>{error}</Text>
+        <Text style={[appStyles.errorText, { marginVertical: 10 }]}>{error}</Text>
       )}
       {loading ? (
         <ActivityIndicator
-          style={[appStyles.indicatorStyle, {marginTop: 100}]}
+          style={[appStyles.indicatorStyle, { marginTop: 100 }]}
           size={'large'}
           color={colors.accent}
         />
@@ -128,7 +129,7 @@ export default function UserProfile({navigation}) {
               onPress={followUser}
               style={[
                 styles.followBtn,
-                visitProfile.is_followed && {backgroundColor: colors.lines},
+                visitProfile.is_followed && { backgroundColor: colors.lines },
               ]}>
               <Text style={styles.btnTxt}>
                 {visitProfile.is_followed ? 'Following' : 'Follow'}
