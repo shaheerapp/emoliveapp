@@ -1456,13 +1456,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SSZipArchive (~> 2.4.3)
     - Yoga
-<<<<<<< HEAD
-  - react-native-safe-area-context (5.4.0):
-=======
-  - react-native-quick-md5 (3.0.6):
+    - react-native-safe-area-context (5.4.0):
+    - react-native-quick-md5 (3.0.6):
     - React-Core
-  - react-native-safe-area-context (5.2.0):
->>>>>>> game-integration
     - DoubleConversion
     - glog
     - hermes-engine
