@@ -48,12 +48,8 @@
     "react-native-svg": "^15.10.1",
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
-<<<<<<< HEAD
-    "react-native-vision-camera": "4.6.3",
-=======
     "react-native-vision-camera": "^4.6.3",
     "react-native-webview": "^13.13.5",
->>>>>>> game-integration
     "react-redux": "^9.2.0",
     "reselect": "^5.1.1",
     "socket.io-client": "^4.8.1",
