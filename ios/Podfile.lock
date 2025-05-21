@@ -1456,7 +1456,13 @@ PODS:
     - ReactCommon/turbomodule/core
     - SSZipArchive (~> 2.4.3)
     - Yoga
+<<<<<<< HEAD
   - react-native-safe-area-context (5.4.0):
+=======
+  - react-native-quick-md5 (3.0.6):
+    - React-Core
+  - react-native-safe-area-context (5.2.0):
+>>>>>>> game-integration
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1514,6 +1520,27 @@ PODS:
     - React-graphics
     - React-ImageManager
     - react-native-safe-area-context/common
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-webview (13.13.5):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -2170,7 +2197,9 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-ota-hot-update (from `../node_modules/react-native-ota-hot-update`)
+  - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -2327,8 +2356,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-ota-hot-update:
     :path: "../node_modules/react-native-ota-hot-update"
+  react-native-quick-md5:
+    :path: "../node_modules/react-native-quick-md5"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -2472,8 +2505,15 @@ SPEC CHECKSUMS:
   react-native-fbsdk-next: 52f81e60eb3e8e0e06cf9728b4572d3509ca9d01
   react-native-image-picker: 91f4e8dd458db2acdb278479e960bc224cbf0217
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
+<<<<<<< HEAD
   react-native-ota-hot-update: 1cc292533d0818e9bf4b7afb7998bbb6020c90be
   react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
+=======
+  react-native-ota-hot-update: 5485a20e55a78cd490c90ecadfc426362517cd5f
+  react-native-quick-md5: 368e091d448aa3d32a0cbb5d3ce883ae85b72596
+  react-native-safe-area-context: 5e53e2b0fc3a2994ad0c89a2486e545b6566d8c4
+  react-native-webview: cb6ca8e0928ef826bdf061a39b7db56ab4d4d480
+>>>>>>> game-integration
   React-nativeconfig: 539ff4de6ce3b694e8e751080568c281c84903ce
   React-NativeModulesApple: 702246817c286d057e23fe4b1302019796e62521
   React-perflogger: f260e2de95f9dbd002035251559c13bf1f0643d4

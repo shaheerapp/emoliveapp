@@ -4,36 +4,46 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
-  ImageBackground,
   Image,
+  Alert,
 } from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
-import {colors} from '../../../styles/colors';
+import React, { useEffect, useState } from 'react';
+import { colors } from '../../../styles/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import appStyles from '../../../styles/styles';
-import Cards from '../../../assets/svg/games/cards.svg';
-import Greedy from '../../../assets/svg/games/greedy.svg';
-import Frame from '../../../assets/svg/games/frame.svg';
-import Lucky from '../../../assets/svg/games/lucky.svg';
-import Roulette from '../../../assets/svg/games/Roulette.svg';
-import CardGp from '../../../assets/svg/games/cardGp.svg';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import useCurrentUser from '../../../hooks/useCurrentUser';
+import { v4 as uuidv4 } from 'uuid';
+import { useSelector } from 'react-redux';
+import { useAppContext } from '../../../Context/AppContext';
+import { generateCode } from '../../../Api/baishun';
 
-export default function PlayCenter({navigation}) {
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [sheet, setSheet] = useState<boolean>(false);
-  const [sheetType, setSheetType] = useState<string | null>('tools');
+interface Props {
+  navigation: any;
+  route: any;
+}
 
-  // Function to handle open Bottom Sheet
-  const handleOpenSheet = useCallback(() => {
-    setSheet(true);
-    bottomSheetRef.current?.expand();
-  }, []);
-  // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    // console.log('handleSheetChanges', index);
-    if (index < 0) setSheet(false);
-  }, []);
+
+const PlayCenter: React.FC<Props> = ({ navigation, route }) => {
+  const { userAuthInfo, tokenMemo } = useAppContext();
+  const { user } = userAuthInfo;
+  const { game } = route.params;
+
+
+  const handlePlay = async () => {
+    try {
+      const code = await generateCode(user.id);
+
+      navigation.navigate('WebViewGame', {
+        url: game.download_url,
+        user: user,
+        code: code,
+      });
+    } catch (err) {
+      console.error('Failed to get code:', err);
+      Alert.alert('Error', 'Unable to start game. Please try again.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -43,9 +53,9 @@ export default function PlayCenter({navigation}) {
           alignItems: 'center',
           justifyContent: 'center',
           width: '99%',
-          marginTop: Platform.OS == 'ios' ? 60 : 40,
+          marginTop: Platform.OS === 'ios' ? 60 : 15,
         }}>
-        <View style={{width: '38%'}} />
+        <View style={{ width: '38%' }} />
         <View
           style={{
             width: '62%',
@@ -61,183 +71,28 @@ export default function PlayCenter({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginTop: 50,
-          justifyContent: 'space-between',
-        }}>
-        <TouchableOpacity style={styles.game} onPress={handleOpenSheet}>
-          <Cards style={{marginTop: 40}} width={65} height={59} />
-          <Text style={styles.gameName}>Teen Pati</Text>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 40 }}>
+        <TouchableOpacity style={styles.game}
+          onPress={handlePlay}
+        >
+          <Image source={{ uri: game.preview_url }} style={{ width: 60, height: 60, marginTop: 20 }} />
+          <Text style={styles.gameName}>Play {game.name}</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.game}
-          onPress={() => navigation.navigate('ScoreCard')}>
-          <Lucky style={{marginTop: 40}} width={65} height={59} />
-          <Text style={styles.gameName}>Lucky 77</Text>
+
+        <TouchableOpacity style={styles.game} onPress={() => navigation.navigate('ScoreCard', { gameId: game.game_id })}>
+          <Image source={require('../../../assets/images/games/bag.png')} style={{ width: 60, height: 60, marginTop: 20 }} />
+          <Text style={styles.gameName}>View Scores</Text>
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginTop: 40,
-          justifyContent: 'space-between',
-        }}>
-        <TouchableOpacity
-          style={styles.game}
-          onPress={() => navigation.navigate('ScoreCard')}>
-          <Greedy style={{marginTop: 40}} width={65} height={59} />
-          <Text style={styles.gameName}>Greedy</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.game}
-          onPress={() => navigation.navigate('ScoreCard')}>
-          <Roulette style={{marginTop: 40}} width={65} height={59} />
-          <Text style={styles.gameName}>Roulette</Text>
-        </TouchableOpacity>
-      </View>
-      <BottomSheet
-        index={-1}
-        enablePanDownToClose={true}
-        snapPoints={['60%']}
-        ref={bottomSheetRef}
-        handleStyle={{
-          backgroundColor: colors.LG,
-        }}
-        handleIndicatorStyle={{
-          backgroundColor: colors.complimentary,
-        }}
-        onChange={handleSheetChanges}>
-        <BottomSheetView style={styles.contentContainer}>
-          <ImageBackground
-            style={{
-              //   flex: 1,
-              width: '100%',
-              height: '100%',
-              //   marginTop: 100,
-            }}
-            source={require('../../../assets/images/games/border.png')}>
-            <View
-              style={{
-                borderBottomColor: '#000000',
-                borderBottomWidth: 2,
-                backgroundColor: '#B95317',
-                padding: 20,
-              }}>
-              <Text
-                style={[
-                  appStyles.title1,
-                  {color: colors.complimentary, textAlign: 'center'},
-                ]}>
-                Teen Patti
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <CardGp />
-              <Frame />
-
-              {/* <Text>Cards in row</Text> */}
-            </View>
-            <View style={{marginVertical: 30}}>
-              <View style={{alignSelf: 'flex-end', marginRight: 40}}>
-                <Image
-                  style={{height: 80, width: 60}}
-                  source={require('../../../assets/images/games/chair.png')}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-around',
-                }}>
-                <View style={styles.sheetCategory}>
-                  <View style={styles.scoreHead}>
-                    <Text style={styles.sheetCategoryTxt}>A</Text>
-                  </View>
-                  <View style={styles.scoreSection}>
-                    <Text style={styles.score}>Pot: 1435k</Text>
-                  </View>
-                  <View style={styles.playerScore}>
-                    <Text style={styles.score}>You: 0</Text>
-                  </View>
-                </View>
-
-                <View style={styles.sheetCategory}>
-                  <View style={styles.scoreHead}>
-                    <Text style={styles.sheetCategoryTxt}>B</Text>
-                  </View>
-                  <View style={styles.scoreSection}>
-                    <Text style={styles.score}>Pot: 1435k</Text>
-                  </View>
-                  <View style={styles.playerScore}>
-                    <Text style={styles.score}>You: 0</Text>
-                  </View>
-                </View>
-                <View style={styles.sheetCategory}>
-                  <View style={styles.scoreHead}>
-                    <Text style={styles.sheetCategoryTxt}>C</Text>
-                  </View>
-                  <View style={styles.scoreSection}>
-                    <Text style={styles.score}>Pot: 1435k</Text>
-                  </View>
-                  <View style={styles.playerScore}>
-                    <Text style={styles.score}>You: 0</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <View style={{flexDirection: 'row', padding: 20}}>
-              <View
-                style={{
-                  padding: 10,
-                  borderRadius: 20,
-                  backgroundColor: '#E2983A',
-                }}>
-                <Text
-                  style={[
-                    appStyles.regularTxtMd,
-                    {color: colors.complimentary},
-                  ]}>
-                  170 TOP-up{'>'}{' '}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '70%',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
-                }}>
-                <Text style={styles.catText}>100</Text>
-                <Text style={styles.catText}>1000</Text>
-                <View>
-                  <Image
-                    style={{height: 25, width: 25}}
-                    source={require('../../../assets/images/games/bag.png')}
-                  />
-                </View>
-                {/* <View>5k</View> */}
-                <Text style={styles.catText}>10k</Text>
-                <Text style={styles.catText}>50k</Text>
-              </View>
-            </View>
-          </ImageBackground>
-        </BottomSheetView>
-      </BottomSheet>
       {/* <Text>ScoreCard</Text> */}
     </View>
   );
-}
+};
+
+export default PlayCenter;
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
