@@ -1346,7 +1346,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-blob-util (0.21.2):
+  - react-native-blob-util (0.21.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1456,9 +1456,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SSZipArchive (~> 2.4.3)
     - Yoga
-    - react-native-safe-area-context (5.4.0):
-    - react-native-quick-md5 (3.0.6):
+  - react-native-quick-md5 (3.0.6):
     - React-Core
+  - react-native-safe-area-context (5.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2137,11 +2137,11 @@ PODS:
   - SocketRocket (0.7.1)
   - SSZipArchive (2.4.3)
   - TweetNacl (1.0.2)
-  - VisionCamera (4.6.3):
-    - VisionCamera/Core (= 4.6.3)
-    - VisionCamera/React (= 4.6.3)
-  - VisionCamera/Core (4.6.3)
-  - VisionCamera/React (4.6.3):
+  - VisionCamera (4.6.4):
+    - VisionCamera/Core (= 4.6.4)
+    - VisionCamera/React (= 4.6.4)
+  - VisionCamera/Core (4.6.4)
+  - VisionCamera/React (4.6.4):
     - React-Core
   - Yoga (0.0.0)
 
@@ -2495,21 +2495,16 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 89885d1518433a462fe64b68bf5e097997380090
   React-microtasksnativemodule: 36341e09dcd1df535503e6ed2ddf88f10da56d52
   react-native-agora: ceb673fca003261b20c96a0ae083490e99a6b340
-  react-native-blob-util: 5c9cd69d650932ed699ed51fe026a55aeb070bca
+  react-native-blob-util: 05b8086ef41c616c91f685986e38e3f0127802c8
   react-native-chat-sdk: b2cdd359c2567748e5d7e5ce5b691ee05684ab28
   react-native-date-picker: 2a07230cec3013ce67503d3ad8de4d909e2cd213
   react-native-fbsdk-next: 52f81e60eb3e8e0e06cf9728b4572d3509ca9d01
   react-native-image-picker: 91f4e8dd458db2acdb278479e960bc224cbf0217
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-<<<<<<< HEAD
   react-native-ota-hot-update: 1cc292533d0818e9bf4b7afb7998bbb6020c90be
-  react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
-=======
-  react-native-ota-hot-update: 5485a20e55a78cd490c90ecadfc426362517cd5f
   react-native-quick-md5: 368e091d448aa3d32a0cbb5d3ce883ae85b72596
-  react-native-safe-area-context: 5e53e2b0fc3a2994ad0c89a2486e545b6566d8c4
+  react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
   react-native-webview: cb6ca8e0928ef826bdf061a39b7db56ab4d4d480
->>>>>>> game-integration
   React-nativeconfig: 539ff4de6ce3b694e8e751080568c281c84903ce
   React-NativeModulesApple: 702246817c286d057e23fe4b1302019796e62521
   React-perflogger: f260e2de95f9dbd002035251559c13bf1f0643d4
@@ -2551,7 +2546,7 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
-  VisionCamera: 030bcbf22791d698926e7c0e3b804126165e62e3
+  VisionCamera: f56eaedde0d3fa095143b78374d29e89e71735f9
   Yoga: be6f55a028e86c83ae066f018e9b5d24ffc45436
 
 PODFILE CHECKSUM: d24141268e4fb867ce6b8a8887d9308dda142efa

@@ -19,13 +19,14 @@ const styles = StyleSheet.create({
   },
 
   sheetMessage: {
-    position: 'relative',
+    // position: 'relative',
     flexDirection: 'row',
-    width: '95%',
+    width: '70%',
     paddingHorizontal: 20,
     borderRadius: 4,
     paddingVertical: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // marginBottom:"30%"
   },
   guest: {
     marginTop: 10,

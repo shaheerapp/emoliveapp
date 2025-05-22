@@ -5,18 +5,20 @@ import {
   ActivityIndicator,
   StyleSheet,
   Image,
+  ImageBackground,
 } from 'react-native';
 
-import {colors} from '../../../../../styles/colors';
-import appStyles from '../../../../../styles/styles';
+import {colors} from '../../../../styles/colors';
+import appStyles from '../../../../styles/styles';
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   removeUserFromSingleStream,
   setSingle,
-} from '../../../../../store/slice/streamingSlice';
-import axiosInstance from '../../../../../Api/axiosConfig';
+} from '../../../../store/slice/streamingSlice';
+import axiosInstance from '../../../../Api/axiosConfig';
+import {IMAGES} from '../../../../assets/images';
 
 interface HeaderProps {
   user: any;
@@ -27,7 +29,7 @@ interface HeaderProps {
   leavePodcast: any;
   connected: boolean;
 }
-export default function Header({
+export default function LiveHeader({
   user,
   navigation,
   token,
@@ -75,31 +77,38 @@ export default function Header({
   };
   return (
     <View style={[styles.header, single && styles.header2]}>
-      <View style={styles.userInfo}>
-        <Image
-          source={
-            host.avatar
-              ? {
-                  uri: envVar.API_URL + 'display-avatar/' + host.id,
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              : require('../../../../../assets/images/place.jpg')
-          }
-          style={styles.avatar}
-        />
-        <Text style={[appStyles.regularTxtMd, {color: colors.complimentary}]}>
-          {host.first_name + ' ' + host.last_name}
-        </Text>
-        <View style={styles.level}>
+      <View style={{width: '50%'}}>
+        <ImageBackground
+          borderRadius={50}
+          source={IMAGES.Rectangle}
+          style={styles.userInfo}>
+          <Image
+            source={
+              host.avatar
+                ? {
+                    uri: envVar.API_URL + 'display-avatar/' + host.id,
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                : require('../../../../assets/images/place.jpg')
+            }
+            style={styles.avatar}
+          />
+          <View>
+            <Text style={[appStyles.regularTxtMd]}>😊😴</Text>
+            <Text
+              style={[appStyles.regularTxtMd, {color: colors.complimentary}]}>
+              {host.first_name + ' ' + host.last_name}
+            </Text>
+            {/* <View style={styles.level}>
           <Text
             onPress={() => dispatch(setSingle(!single))}
             style={{color: 'black', fontSize: 6, fontWeight: '500'}}>
             LV:1
           </Text>
-        </View>
-        {host.id !== user.id && (
+        </View> */}
+            {/* {host.id == user.id && (
           <TouchableOpacity
             style={styles.addBtn}
             onPress={() => {
@@ -111,31 +120,54 @@ export default function Header({
             }}>
             <Icon name="plus" color="#fff" size={20} />
           </TouchableOpacity>
-        )}
+        )} */}
+          </View>
+        </ImageBackground>
       </View>
-      <ActivityIndicator
+      {/* <ActivityIndicator
         animating={loading}
         size={'small'}
         color={colors.accent}
-      />
-      <View style={styles.right}>
-        <View>
+      /> */}
+      <View style={{width: '50%',}}>
+        <View style={styles.right}>
+          {/* <View>
           <Text
             onPress={() => dispatch(removeUserFromSingleStream(1))}
             style={[appStyles.bodyMd, {color: colors.complimentary}]}>
             Duration:{' '}
             <Text style={[{color: colors.golden}]}>{formatTime(time)}</Text>
-            {/* Duration: <Text style={[{color: colors.golden}]}>10:34</Text> */}
           </Text>
-        </View>
-        <TouchableOpacity onPress={leavePodcast}>
-          <Icon
+        </View> */}
+          <TouchableOpacity
+            style={{
+              overflow: 'hidden',
+              width: 30,
+              height: 30,
+              borderRadius: 25,
+              padding: 5,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={leavePodcast}>
+            <ImageBackground
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 25,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              source={IMAGES.Rectangle}>
+              {/* <Icon
             name="close"
             size={25}
             color={connected ? colors.complimentary : colors.accent}
-          />
-          {/* <Icon name="close" size={25} color="#fff" /> */}
-        </TouchableOpacity>
+          /> */}
+              <Icon name="close" size={25} color="#fff" />
+            </ImageBackground>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -146,14 +178,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   userInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '40%',
+    justifyContent: 'space-between',
+    // width: '75%',
+    // height: '120%',
     alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    resizeMode: 'cover',
+    gap: 7,
   },
-  avatar: {width: 28, height: 28, borderRadius: 15},
+  avatar: {width: 40, height: 40, borderRadius: 40},
   addBtn: {
     padding: 2,
     backgroundColor: '#F00044',
@@ -162,8 +200,8 @@ const styles = StyleSheet.create({
   level: {backgroundColor: '#08FEF8', padding: 2, borderRadius: 1},
   right: {
     flexDirection: 'row',
-    width: '35%',
-    justifyContent: 'space-between',
+    // width: '35%',
+    justifyContent:"flex-end",
     alignItems: 'center',
   },
   header2: {
