@@ -30,6 +30,7 @@ import {
 
 import {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import { IMAGES } from '../../../../../assets/images';
 interface BottomSectionProps {
   handleOpenSheet: any;
   roomId: string;
@@ -134,10 +135,13 @@ const BottomSection = ({
         single
           ? bottomStyles.singleLive
           : {
-              flex: 1,
-              padding: 10,
+              // flex: 1,
+              paddingHorizontal: 10,
             },
       ]}>
+        <View style={{width:"60%",alignSelf:"center"}}>
+          <Image source={IMAGES.stars} style={{width:"100%",height:30}}/>
+        </View>
       <View
         style={[
           styles.sheetMessage,
@@ -145,12 +149,16 @@ const BottomSection = ({
         ]}>
         <Text
           onPress={fadeInAndOut}
-          style={[appStyles.bodyMd, {color: colors.yellow, lineHeight: 20}]}>
-          Emo Live :{' '}
-          <Text style={[appStyles.bodyRg, {color: colors.complimentary}]}>
-            {' '}
-            Great to see you here. Please don’t use abusive language, enjoy the
-            stream, Have fun 😊
+          style={[appStyles.bodyMd, {color: colors.yellow, lineHeight: 15}]}>
+          {/* Emo Live :{' '} */}
+          <Text
+            style={[
+              appStyles.bodyRg,
+              {textAlign: 'center', color: colors.complimentary},
+            ]}>
+            Any sexual or violation content is strictly prohibited.All violators
+            will be banned.Do not expose your personal info such as phone or
+            location.
           </Text>
         </Text>
       </View>
@@ -170,7 +178,7 @@ const BottomSection = ({
       </View>
 
       {/* )} */}
-      <View style={[single ? {height: '30%'} : {height: '46%'}]}>
+      <View style={[single ? {height: '20%'} : {height: '16%'}]}>
         <FlatList
           data={chatRoomMessages}
           contentContainerStyle={{paddingBottom: 10}}

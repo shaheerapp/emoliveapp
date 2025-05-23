@@ -36,8 +36,7 @@ import {
   RtcStats,
 } from 'react-native-agora';
 import {ChatClient} from 'react-native-agora-chat';
-import appStyles from '../../../../styles/styles';
-import {colors} from '../../../../styles/colors';
+
 import AvatarSheet from './Components/AvatarSheet';
 import BottomSection from './Components/BottomSection';
 import PodcastGuest from './Podcast/PodcastGuest';
@@ -68,6 +67,16 @@ import {setIsJoined} from '../../../../store/slice/usersSlice';
 import {checkMicrophonePermission} from '../../../../scripts';
 import LiveLoading from './Components/LiveLoading';
 import {useAppContext} from '../../../../Context/AppContext';
+
+import LiveHeader from './LiveHeader';
+import {appStyles} from './Podcast/podcastImport';
+import {IMAGES} from '../../../../assets/images';
+import {colors} from '../../../../styles/colors';
+import {Image} from 'react-native';
+import {
+  getUserInfoFromAPIS,
+  removeUserFromSingleStream,
+} from '../../../../store/slice/streamingSlice';
 const MAX_RETRIES = 3;
 
 export default function GoLive({navigation}: any) {
@@ -75,10 +84,12 @@ export default function GoLive({navigation}: any) {
   const agoraEngineRef = useRef<IRtcEngine>(); // IRtcEngine instance
   const eventHandler = useRef<IRtcEngineEventHandler>(); // Implement callback functions
   const dispatch = useDispatch();
+  const [time, setTime] = useState(0);
   const {connected} = useSelector((state: any) => state.chat);
-  const {podcast, podcastListeners, rtcTokenRenewed} = useSelector(
+  const {podcast, podcastListeners, rtcTokenRenewed, leaveModal} = useSelector(
     (state: any) => state.podcast,
   );
+
   const {isJoined, liveStatus, roomId} = useSelector(
     (state: any) => state.users,
   );
@@ -92,6 +103,12 @@ export default function GoLive({navigation}: any) {
 
   // callbacks
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(prevTime => prevTime + 1); // Increment time by 1 second
+    }, 1000);
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
   useEffect(() => {
     if (!isJoined) return;
 
@@ -132,7 +149,7 @@ export default function GoLive({navigation}: any) {
           if (podcast.host == user.id) {
             // createUserChatRoom();
           } else {
-            dispatch(getUserInfoFromAPI({id: podcast.host}));
+            dispatch(getUserInfoFromAPIS({id: podcast.host}));
             // userJoinChatRoom(podcast.chat_room_id);
           }
 
@@ -469,29 +486,105 @@ export default function GoLive({navigation}: any) {
     }
     dispatch(setLeaveModal(true));
   };
+  const formatTime = timeInSeconds => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+      2,
+      '0',
+    )}`;
+  };
   return (
-    <SafeAreaView edges={['top']} style={{flex: 1, backgroundColor: colors.LG}}>
-      <View style={styles.container}>
-        <ImageBackground
-          style={styles.image}
-          source={require('../../../../assets/images/LiveBg.png')}>
+    <ImageBackground style={[styles.image]} source={IMAGES.streamingbg}>
+      <View style={{flex: 1}}>
+        <View
+          style={[
+            styles.image,
+            {
+              paddingTop: 50,
+              justifyContent: 'space-between',
+            },
+          ]}>
           {/* ************ Header Start ************ */}
-          <Header
-            user={user}
-            navigation={navigation}
-            token={token}
-            liveEvent={podcast}
-            envVar={envVar}
-            leavePodcast={leavePodcast}
-            connected={connected}
-          />
+          <View>
+            <LiveHeader
+              user={user}
+              navigation={navigation}
+              token={token}
+              liveEvent={podcast}
+              envVar={envVar}
+              leavePodcast={leavePodcast}
+              connected={connected}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '50%',
+                justifyContent: 'space-around',
+                marginHorizontal: 10,
+              }}>
+              <ImageBackground
+                source={IMAGES.Rectangle}
+                borderRadius={25}
+                style={{padding: 7, justifyContent: 'center'}}>
+                <Text>💎 12343</Text>
+              </ImageBackground>
+              <ImageBackground
+                source={IMAGES.Rectangle}
+                borderRadius={25}
+                style={{padding: 7, justifyContent: 'center'}}>
+                <Text>12343</Text>
+              </ImageBackground>
+              <ImageBackground
+                source={IMAGES.Rectangle}
+                borderRadius={25}
+                style={{padding: 7, justifyContent: 'center'}}>
+                <Image source={IMAGES.music} style={{width: 25, height: 25}} />
+              </ImageBackground>
+            </View>
+            <Text
+              onPress={() => dispatch(removeUserFromSingleStream(1))}
+              style={[appStyles.bodyMd, {color: colors.complimentary,marginHorizontal:"8%",marginVertical:"2%"}]}>
+              {/* Duration:{' '} */}
+              <Text style={[{color: colors.golden}]}>{formatTime(time)}</Text>
+            </Text>
+          </View>
 
           {/* ************ Header end ************ */}
           {/* ************ second row ************ */}
-          <PodcastStatus />
+          {/* <PodcastStatus /> */}
           {/* ************ second row ************ */}
-
           <View>
+            <View style={styles.container}>
+              <View style={styles.row}>
+                <View style={styles.micWrapper}>
+                  <Image source={IMAGES.mic} style={styles.micImage} />
+                </View>
+
+                <View style={styles.profileWrapper}>
+                  <ImageBackground
+                    source={IMAGES.RectangleWithLine}
+                    style={styles.rectangleImage}>
+                    <View style={styles.profileImageWrapper}>
+                      <Image
+                        source={require('../../../../assets/images/place.jpg')}
+                        style={styles.profileImage}
+                      />
+                    </View>
+
+                    <View style={styles.iconWrapper}>
+                      <View style={styles.emptySeat}>
+                        <Icon name="sofa-single" color={'#CDC6CE'} size={30} />
+                      </View>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </View>
+              <View>
+                <Text style={{textAlign: 'center', padding: 5}}>😉😌</Text>
+                <Text style={{textAlign: 'center'}}>😉😌</Text>
+              </View>
+            </View>
             <FlatList
               data={podcastListeners}
               numColumns={4}
@@ -513,7 +606,7 @@ export default function GoLive({navigation}: any) {
                   ) : (
                     <View style={{alignItems: 'center'}}>
                       <View style={styles.emptySeat}>
-                        <Icon name="sofa-single" color={'#CDC6CE'} size={20} />
+                        <Icon name="sofa-single" color={'#CDC6CE'} size={30} />
                       </View>
 
                       <Text
@@ -529,15 +622,17 @@ export default function GoLive({navigation}: any) {
               )}
             />
           </View>
-          <EndLive
-            user={user}
-            endPodcastForUser={endPodcastForUser}
-            navigation={navigation}
-            id={podcast.id}
-            live={false}
-            PK={false}
-            battle={''}
-          />
+          {leaveModal && (
+            <EndLive
+              user={user}
+              endPodcastForUser={endPodcastForUser}
+              navigation={navigation}
+              id={podcast.id}
+              live={false}
+              PK={false}
+              battle={''}
+            />
+          )}
 
           <BottomSheet
             index={-1}
@@ -576,10 +671,10 @@ export default function GoLive({navigation}: any) {
               handleOpenSheet={handleOpenSheet}
             />
           )}
-        </ImageBackground>
+        </View>
         {liveStatus == 'LOADING' && <LiveLoading />}
       </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 }
 
@@ -593,5 +688,71 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.25,
     alignSelf: 'stretch',
     marginBottom: 20,
+  },
+  rectangleImage: {
+    alignSelf: 'center',
+    width: 150,
+    height: 50,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  container: {
+    width: '60%',
+    alignSelf: 'center',
+    marginVertical: 15,
+  },
+  row: {
+    width: '100%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+  micWrapper: {
+    alignSelf: 'center',
+    width: 70,
+    height: 70,
+    padding: 10,
+  },
+  micImage: {
+    width: '100%',
+    height: '100%',
+  },
+  profileWrapper: {
+    alignSelf: 'center',
+  },
+  rectangleImageBg: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+  },
+  profileImageWrapper: {
+    alignItems: 'center',
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    paddingHorizontal: 5,
+  },
+  emptySeat: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    borderColor: colors.accent,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomBar: {
+    width: '100%',
+    backgroundColor: '#545454',
+    alignSelf: 'center',
   },
 });
