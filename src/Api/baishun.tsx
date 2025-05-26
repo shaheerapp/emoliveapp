@@ -7,6 +7,7 @@ const BASE_URL = 'https://game-cn-test.jieyou.shop';
 const SERVER_BASE_URL = 'https://emolivestreaming.com';
 // const SERVER_BASE_URL = 'http://localhost:3000';
 
+
 function generateSignature(signatureNonce: string, timestamp: number): string {
     return md5(signatureNonce + APP_KEY + timestamp).toString();
 }
@@ -62,4 +63,3 @@ export const generateCode = async (user_id: any) => {
         console.error('Fetch failed:', error);
     }
 };
-

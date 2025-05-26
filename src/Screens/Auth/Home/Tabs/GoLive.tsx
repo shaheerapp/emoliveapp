@@ -10,15 +10,15 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
-const {ScreenAwake} = NativeModules;
+const { ScreenAwake } = NativeModules;
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconM from 'react-native-vector-icons/MaterialIcons';
 import liveStyles from './styles/liveStyles';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const deviceWidth = Dimensions.get('window').width;
 
-import React, {useRef, useCallback, useEffect, useState} from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import Tools from './Podcast/Tools';
 import PodcastStatus from './Podcast/PodcastStatus';
 // import PodcastSt
@@ -35,20 +35,20 @@ import {
   UserOfflineReasonType,
   RtcStats,
 } from 'react-native-agora';
-import {ChatClient} from 'react-native-agora-chat';
+import { ChatClient } from 'react-native-agora-chat';
 
 import AvatarSheet from './Components/AvatarSheet';
 import BottomSection from './Components/BottomSection';
 import PodcastGuest from './Podcast/PodcastGuest';
-import {resetPodcastState, getLiveUsers} from './scripts/liveScripts';
+import { resetPodcastState, getLiveUsers } from './scripts/liveScripts';
 import Header from './Podcast/Header';
 
-import {useSelector, useDispatch} from 'react-redux';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import { useSelector, useDispatch } from 'react-redux';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import axiosInstance from '../../../../Api/axiosConfig';
 import EndLive from './Podcast/EndLive';
 import Gifts from './Podcast/Gifts';
-import {setLiveStatus} from '../../../../store/slice/usersSlice';
+import { setLiveStatus } from '../../../../store/slice/usersSlice';
 
 import envVar from '../../../../config/envVar';
 import Users from './Podcast/Users';
@@ -63,40 +63,40 @@ import {
   setPrevUsersInPodcast,
   updatePodcastRoomId,
 } from '../../../../store/slice/podCastSlice';
-import {setIsJoined} from '../../../../store/slice/usersSlice';
-import {checkMicrophonePermission} from '../../../../scripts';
+import { setIsJoined } from '../../../../store/slice/usersSlice';
+import { checkMicrophonePermission } from '../../../../scripts';
 import LiveLoading from './Components/LiveLoading';
-import {useAppContext} from '../../../../Context/AppContext';
+import { useAppContext } from '../../../../Context/AppContext';
 
 import LiveHeader from './LiveHeader';
-import {appStyles} from './Podcast/podcastImport';
-import {IMAGES} from '../../../../assets/images';
-import {colors} from '../../../../styles/colors';
-import {Image} from 'react-native';
+import { appStyles } from './Podcast/podcastImport';
+import { IMAGES } from '../../../../assets/images';
+import { colors } from '../../../../styles/colors';
+import { Image } from 'react-native';
 import {
   getUserInfoFromAPIS,
   removeUserFromSingleStream,
 } from '../../../../store/slice/streamingSlice';
 const MAX_RETRIES = 3;
 
-export default function GoLive({navigation}: any) {
+export default function GoLive({ navigation }: any) {
   const chatClient = ChatClient.getInstance();
   const agoraEngineRef = useRef<IRtcEngine>(); // IRtcEngine instance
   const eventHandler = useRef<IRtcEngineEventHandler>(); // Implement callback functions
   const dispatch = useDispatch();
   const [time, setTime] = useState(0);
-  const {connected} = useSelector((state: any) => state.chat);
-  const {podcast, podcastListeners, rtcTokenRenewed, leaveModal} = useSelector(
+  const { connected } = useSelector((state: any) => state.chat);
+  const { podcast, podcastListeners, rtcTokenRenewed, leaveModal } = useSelector(
     (state: any) => state.podcast,
   );
 
-  const {isJoined, liveStatus, roomId} = useSelector(
+  const { isJoined, liveStatus, roomId } = useSelector(
     (state: any) => state.users,
   );
 
-  const {userAuthInfo, tokenMemo} = useAppContext();
-  const {user, setUser} = userAuthInfo;
-  const {token} = tokenMemo;
+  const { userAuthInfo, tokenMemo } = useAppContext();
+  const { user, setUser } = userAuthInfo;
+  const { token } = tokenMemo;
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [sheet, setSheet] = useState<boolean>(false);
   const [sheetType, setSheetType] = useState<string | null>('');
@@ -110,7 +110,7 @@ export default function GoLive({navigation}: any) {
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
   useEffect(() => {
-    if (!isJoined) return;
+    if (!isJoined) { return; }
 
     const backAction = () => {
       dispatch(setLeaveModal(true));
@@ -138,6 +138,13 @@ export default function GoLive({navigation}: any) {
     };
   }, [isJoined, podcast]);
 
+  useEffect(() => {
+    if (isJoined) {
+      leaveAgoraChannel(); // Leave previous channel before joining new one
+    }
+    setupVideoSDKEngine();
+  }, [podcast.channel]);
+
   const setupVideoSDKEngine = async () => {
     try {
       // Create RtcEngine after obtaining device permissions
@@ -149,7 +156,7 @@ export default function GoLive({navigation}: any) {
           if (podcast.host == user.id) {
             // createUserChatRoom();
           } else {
-            dispatch(getUserInfoFromAPIS({id: podcast.host}));
+            dispatch(getUserInfoFromAPIS({ id: podcast.host }));
             // userJoinChatRoom(podcast.chat_room_id);
           }
 
@@ -162,7 +169,7 @@ export default function GoLive({navigation}: any) {
         onUserJoined: (_connection: RtcConnection, uid: number) => {
           console.log(uid, 'remote user joined');
           if (uid !== podcast.host) {
-            dispatch(getUserInfoFromAPI({id: uid, remote: true}));
+            dispatch(getUserInfoFromAPI({ id: uid, remote: true }));
           }
         },
         onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
@@ -191,7 +198,7 @@ export default function GoLive({navigation}: any) {
               return;
             }
           }
-          if (reason == 1) {
+          if (reason === 1) {
             console.log(uid, 'are having network issues');
           }
         },
@@ -200,7 +207,7 @@ export default function GoLive({navigation}: any) {
           state: ConnectionStateType,
           reason: ConnectionChangedReasonType,
         ) => {
-          // console.log(state, reason);
+          console.log(state, reason);
           handelConnection(state);
         },
       };
@@ -253,7 +260,7 @@ export default function GoLive({navigation}: any) {
   };
   const timeOutScreen = (val: boolean) => {
     try {
-      if (Platform.OS !== 'android') return;
+      if (Platform.OS !== 'android') { return; }
       ScreenAwake.keepAwake(val);
     } catch (error) {
       console.log(error);
@@ -272,7 +279,7 @@ export default function GoLive({navigation}: any) {
   }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
-    if (index < 0) setSheet(false);
+    if (index < 0) { setSheet(false); }
   }, []);
 
   const createUserChatRoom = async (retryCount = 0) => {
@@ -311,6 +318,7 @@ export default function GoLive({navigation}: any) {
       }
     }
   };
+
 
   const saveChatRoomId = async (roomId: string) => {
     try {
@@ -444,7 +452,7 @@ export default function GoLive({navigation}: any) {
   const leaveAgoraChannel = () => {
     try {
       const res = agoraEngineRef.current?.leaveChannel();
-
+      dispatch(setIsJoined(false)); // Important to reset flag
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -462,7 +470,7 @@ export default function GoLive({navigation}: any) {
 
   const muteUnmuteUser = (item: any) => {
     console.log(item, user.id, podcast.host);
-    if (user.id !== podcast.host) return;
+    if (user.id !== podcast.host) { return; }
     let update = [...podcastListeners];
 
     const updatedData = update.map((obj: any) => {
@@ -471,7 +479,7 @@ export default function GoLive({navigation}: any) {
           item.user.id,
           !item.muted,
         );
-        return {...obj, muted: !item.muted};
+        return { ...obj, muted: !item.muted };
       }
       return obj;
     });
@@ -494,9 +502,10 @@ export default function GoLive({navigation}: any) {
       '0',
     )}`;
   };
+
   return (
     <ImageBackground style={[styles.image]} source={IMAGES.streamingbg}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View
           style={[
             styles.image,
@@ -526,27 +535,27 @@ export default function GoLive({navigation}: any) {
               <ImageBackground
                 source={IMAGES.Rectangle}
                 borderRadius={25}
-                style={{padding: 7, justifyContent: 'center'}}>
+                style={{ padding: 7, justifyContent: 'center' }}>
                 <Text>💎 12343</Text>
               </ImageBackground>
               <ImageBackground
                 source={IMAGES.Rectangle}
                 borderRadius={25}
-                style={{padding: 7, justifyContent: 'center'}}>
+                style={{ padding: 7, justifyContent: 'center' }}>
                 <Text>12343</Text>
               </ImageBackground>
               <ImageBackground
                 source={IMAGES.Rectangle}
                 borderRadius={25}
-                style={{padding: 7, justifyContent: 'center'}}>
-                <Image source={IMAGES.music} style={{width: 25, height: 25}} />
+                style={{ padding: 7, justifyContent: 'center' }}>
+                <Image source={IMAGES.music} style={{ width: 25, height: 25 }} />
               </ImageBackground>
             </View>
             <Text
               onPress={() => dispatch(removeUserFromSingleStream(1))}
-              style={[appStyles.bodyMd, {color: colors.complimentary,marginHorizontal:"8%",marginVertical:"2%"}]}>
+              style={[appStyles.bodyMd, { color: colors.complimentary, marginHorizontal: '8%', marginVertical: '2%' }]}>
               {/* Duration:{' '} */}
-              <Text style={[{color: colors.golden}]}>{formatTime(time)}</Text>
+              <Text style={[{ color: colors.golden }]}>{formatTime(time)}</Text>
             </Text>
           </View>
 
@@ -581,8 +590,8 @@ export default function GoLive({navigation}: any) {
                 </View>
               </View>
               <View>
-                <Text style={{textAlign: 'center', padding: 5}}>😉😌</Text>
-                <Text style={{textAlign: 'center'}}>😉😌</Text>
+                <Text style={{ textAlign: 'center', padding: 5 }}>😉😌</Text>
+                <Text style={{ textAlign: 'center' }}>😉😌</Text>
               </View>
             </View>
             <FlatList
@@ -592,7 +601,7 @@ export default function GoLive({navigation}: any) {
               contentContainerStyle={{
                 alignItems: 'center',
               }}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <View style={[styles.podcastHost]}>
                   {item.user ? (
                     <PodcastGuest
@@ -604,7 +613,7 @@ export default function GoLive({navigation}: any) {
                       dispatch={dispatch}
                     />
                   ) : (
-                    <View style={{alignItems: 'center'}}>
+                    <View style={{ alignItems: 'center' }}>
                       <View style={styles.emptySeat}>
                         <Icon name="sofa-single" color={'#CDC6CE'} size={30} />
                       </View>
@@ -612,7 +621,7 @@ export default function GoLive({navigation}: any) {
                       <Text
                         style={[
                           appStyles.paragraph1,
-                          {color: colors.complimentary, textAlign: 'center'},
+                          { color: colors.complimentary, textAlign: 'center' },
                         ]}>
                         {item.seatNo}
                       </Text>
@@ -680,7 +689,7 @@ export default function GoLive({navigation}: any) {
 
 const styles = StyleSheet.create({
   ...liveStyles,
-  tempBtn: {marginLeft: 10, padding: 10, backgroundColor: colors.accent},
+  tempBtn: { marginLeft: 10, padding: 10, backgroundColor: colors.accent },
   tempBtnTxt: {
     color: colors.complimentary,
   },

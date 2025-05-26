@@ -1,8 +1,11 @@
-import {createAsyncThunk} from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import envVar from '../../../config/envVar';
+import axiosInstance from '../../../Api/axiosConfig';
+import { setPodcast } from '../podCastSlice';
 
 export const saveChatRoomId = createAsyncThunk(
   'podcast/saveChatRoomId',
-  async (id, {getState, dispatch}) => {
+  async (id, { getState, dispatch }) => {
     try {
       const url = envVar.API_URL + 'podcast/save-roomId';
 
@@ -12,7 +15,7 @@ export const saveChatRoomId = createAsyncThunk(
       };
       // submit data to  API
 
-      const {data} = await axiosInstance.post(url, formData);
+      const { data } = await axiosInstance.post(url, formData);
       dispatch(setPodcast(data.podcast));
     } catch (error) {
       console.error('Error fetching user info:', error);

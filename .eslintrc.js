@@ -17,6 +17,7 @@ module.exports = {
         'no-sequences': 'off',
         'eslint-disable-next-line no-dupe-keys': 'off',
         'eslint-disable-next-line no-undef': 'off',
+        'eslint-disable-next-line no-catch-shadow': 'off',
       },
     },
   ],

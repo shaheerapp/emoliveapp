@@ -11,22 +11,22 @@ import {
   Alert,
   ImageBackground,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import StartModal from './Components/StartModal';
 import appStyles from '../../../../styles/styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {colors} from '../../../../styles/colors';
-import {useDispatch, useSelector} from 'react-redux';
-import {setLiveForm} from '../../../../store/slice/usersSlice';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import { colors } from '../../../../styles/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLiveForm } from '../../../../store/slice/usersSlice';
+import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import Room9 from '../../../../assets/svg/room9Off.svg';
 import Room9On from '../../../../assets/svg/room9.svg';
-import {resetLiveStreaming, resetPodcastState} from './scripts/liveScripts';
+import { resetLiveStreaming, resetPodcastState } from './scripts/liveScripts';
 import {
   updatePodcastListeners,
   setPodcast,
 } from '../../../../store/slice/podCastSlice';
-import {checkCamPermission} from '../../../../scripts';
+import { checkCamPermission } from '../../../../scripts';
 import {
   updateStreamListeners,
   addStreamListenerS,
@@ -35,17 +35,17 @@ import {
 } from '../../../../store/slice/streamingSlice';
 import axiosInstance from '../../../../Api/axiosConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useAppContext} from '../../../../Context/AppContext';
+import { useAppContext } from '../../../../Context/AppContext';
 interface StartLiveProps {
   navigation: any;
 }
-export default function StartLive({navigation}: StartLiveProps) {
+export default function StartLive({ navigation }: StartLiveProps) {
   const dispatch = useDispatch();
 
-  const {userAuthInfo} = useAppContext();
-  const {user, setUser} = userAuthInfo;
+  const { userAuthInfo } = useAppContext();
+  const { user, setUser } = userAuthInfo;
   const camRef = useRef<Camera>(null);
-  const {liveForm} = useSelector((state: any) => state.users);
+  const { liveForm } = useSelector((state: any) => state.users);
   const [beautySettings, setBeautySettings] = useState(false);
   const [error, setError] = useState('');
   const [editor, setEditor] = useState<any>({
@@ -82,17 +82,17 @@ export default function StartLive({navigation}: StartLiveProps) {
       return;
     }
     if (back) {
-      setEditor(() => ({type: 'back', device: back, ready: true}));
+      setEditor(() => ({ type: 'back', device: back, ready: true }));
     }
   };
   const switchCamera = () => {
     if (editor.type == 'back') {
       let front = useSpecificCamera('front');
-      setEditor(() => ({type: 'back', device: front, ready: true}));
+      setEditor(() => ({ type: 'back', device: front, ready: true }));
       return;
     }
     let back = useSpecificCamera('back');
-    setEditor(() => ({type: 'back', device: back, ready: true}));
+    setEditor(() => ({ type: 'back', device: back, ready: true }));
   };
 
   const capturePhoto = async () => {
@@ -208,6 +208,10 @@ export default function StartLive({navigation}: StartLiveProps) {
   };
   // const device = devices.back;
 
+  useEffect(() => {
+    console.log('Live Form: ', liveForm);
+  }, [liveForm]);
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -234,13 +238,13 @@ export default function StartLive({navigation}: StartLiveProps) {
             />
           )}
 
-          {beautySettings && liveForm.liveType == 'video' && (
+          {beautySettings && liveForm.liveType === 'video' && (
             <>
               <TouchableOpacity
                 style={styles.filter2}
                 onPress={() =>
                   dispatch(
-                    setLiveForm({field: 'multi', value: !liveForm.multi}),
+                    setLiveForm({ field: 'multi', value: !liveForm.multi }),
                   )
                 }>
                 {liveForm.multi ? (
@@ -253,7 +257,7 @@ export default function StartLive({navigation}: StartLiveProps) {
               <View style={styles.filter}>
                 <TouchableOpacity
                   onPress={switchCamera}
-                  style={{alignItems: 'center'}}>
+                  style={{ alignItems: 'center' }}>
                   <Icon
                     name="camera-flip-outline"
                     color={colors.complimentary}
@@ -263,7 +267,7 @@ export default function StartLive({navigation}: StartLiveProps) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={capturePhoto}
-                  style={{alignItems: 'center'}}>
+                  style={{ alignItems: 'center' }}>
                   <Icon
                     name="emoticon-happy-outline"
                     color={colors.complimentary}
@@ -271,7 +275,7 @@ export default function StartLive({navigation}: StartLiveProps) {
                   />
                   <Text style={styles.filterTxt}>Sticker/Beautify</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{alignItems: 'center'}}>
+                <TouchableOpacity style={{ alignItems: 'center' }}>
                   <Icon name="mirror" color={colors.complimentary} size={30} />
                   <Text style={styles.filterTxt}>Mirror Camera</Text>
                 </TouchableOpacity>
@@ -285,12 +289,12 @@ export default function StartLive({navigation}: StartLiveProps) {
             height: '25%',
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
           }}>
-          <View style={{alignItems: 'center'}}>
-            <View style={{width: '100%', marginTop: 10}}>
+          <View style={{ alignItems: 'center' }}>
+            <View style={{ width: '100%', marginTop: 10 }}>
               {liveForm.liveType == 'video' && (
                 <View style={styles.beautify}>
                   <Text
-                    style={[appStyles.bodyMd, {color: colors.complimentary}]}>
+                    style={[appStyles.bodyMd, { color: colors.complimentary }]}>
                     Beauty Settings & more
                   </Text>
                   <Switch
@@ -303,7 +307,7 @@ export default function StartLive({navigation}: StartLiveProps) {
                     onValueChange={(value: boolean) => {
                       setBeautySettings(value);
                       if (editor.ready) {
-                        setEditor((prev: any) => ({...prev, ready: false}));
+                        setEditor((prev: any) => ({ ...prev, ready: false }));
                         return;
                       }
                       startCamera();
@@ -322,7 +326,7 @@ export default function StartLive({navigation}: StartLiveProps) {
                 </View>
               )}
 
-              <View style={{alignItems: 'center', width: '100%'}}>
+              <View style={{ alignItems: 'center', width: '100%' }}>
                 <TouchableOpacity
                   disabled={loading}
                   onPress={submit}
@@ -341,51 +345,51 @@ export default function StartLive({navigation}: StartLiveProps) {
                   <TouchableOpacity
                     onPress={() => {
                       dispatch(
-                        setLiveForm({field: 'liveType', value: 'video'}),
+                        setLiveForm({ field: 'liveType', value: 'video' }),
                       );
                     }}
                     style={[
                       styles.tab,
                       liveForm.liveType == 'video'
-                        ? {borderBottomWidth: 6}
+                        ? { borderBottomWidth: 6 }
                         : {},
                     ]}>
                     <Text
-                      style={[appStyles.bodyMd, {color: colors.complimentary}]}>
+                      style={[appStyles.bodyMd, { color: colors.complimentary }]}>
                       Video Live
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
                       dispatch(
-                        setLiveForm({field: 'liveType', value: 'podcast'}),
+                        setLiveForm({ field: 'liveType', value: 'podcast' }),
                       );
                     }}
                     style={[
                       styles.tab,
                       liveForm.liveType == 'podcast'
-                        ? {borderBottomWidth: 6}
+                        ? { borderBottomWidth: 6 }
                         : {},
                     ]}>
                     <Text
-                      style={[appStyles.bodyMd, {color: colors.complimentary}]}>
+                      style={[appStyles.bodyMd, { color: colors.complimentary }]}>
                       Audio Live
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
                       dispatch(
-                        setLiveForm({field: 'liveType', value: 'secured'}),
+                        setLiveForm({ field: 'liveType', value: 'secured' }),
                       );
                     }}
                     style={[
                       styles.tab,
                       liveForm.liveType == 'secured'
-                        ? {borderBottomWidth: 6}
+                        ? { borderBottomWidth: 6 }
                         : {},
                     ]}>
                     <Text
-                      style={[appStyles.bodyMd, {color: colors.complimentary}]}>
+                      style={[appStyles.bodyMd, { color: colors.complimentary }]}>
                       Secured Live
                     </Text>
                   </TouchableOpacity>
@@ -452,7 +456,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
-  seatTxt: {marginTop: 10, ...appStyles.bodyMd, color: colors.unknown},
+  seatTxt: { marginTop: 10, ...appStyles.bodyMd, color: colors.unknown },
   rightBtn: {
     borderTopWidth: 1,
     borderBottomWidth: 1,

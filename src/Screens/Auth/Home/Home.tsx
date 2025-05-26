@@ -9,13 +9,13 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Popular from './Navigations/Popular';
 import envVar from '../../../config/envVar';
-import {updatePodcastListeners} from '../../../store/slice/podcastSlice';
-import {ChatTextMessageBody} from 'react-native-agora-chat';
-import {fetchUserDetails} from '../../../store/slice/usersSlice';
+import { updatePodcastListeners } from '../../../store/slice/podcastSlice';
+import { ChatTextMessageBody } from 'react-native-agora-chat';
+import { fetchUserDetails } from '../../../store/slice/usersSlice';
 
 import RNFS from 'react-native-fs';
 import {
@@ -43,25 +43,29 @@ import Animated, {
 import Battle from './Navigations/Battle';
 import Games from '../Games/Games';
 import Live from './Navigations/Live';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import NewHost from './Navigations/NewHost';
-import {useAppContext} from '../../../Context/AppContext';
-import {GestureDetector, Gesture} from 'react-native-gesture-handler';
+import { useAppContext } from '../../../Context/AppContext';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Explore from './Tabs/Components/Explore';
 
 // import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
-import {colors} from '../../../styles/colors';
+import { colors } from '../../../styles/colors';
 import appStyles from '../../../styles/styles';
 import axiosInstance from '../../../Api/axiosConfig';
 
-export default function Home({navigation}) {
-  const {userDetails} = useSelector((state: any) => state.users);
-  const {tokenMemo, userAuthInfo} = useAppContext();
+interface Props {
+  navigation: any;
+}
+
+const Home: React.FC<Props> = ({ navigation }) => {
+  const { userDetails } = useSelector((state: any) => state.users);
+  const { tokenMemo, userAuthInfo } = useAppContext();
   const [showExplore, setShowExplore] = useState(false);
-  const {user} = userAuthInfo;
+  const { user } = userAuthInfo;
   const dispatch = useDispatch();
   // const {token} = tokenMemo;
-  const {connected} = useSelector((state: any) => state.chat);
+  const { connected } = useSelector((state: any) => state.chat);
   const scrollViewRef = useRef<ScrollView>(null);
   const flatListRef = useRef(null);
   const [tab, setTab] = useState(1);
@@ -100,7 +104,7 @@ export default function Home({navigation}) {
     setTab(newTab);
 
     const scrollToOffset = (newTab - 1) * 140; // Assuming 140px width per tab
-    scrollViewRef.current?.scrollTo({x: scrollToOffset, animated: true});
+    scrollViewRef.current?.scrollTo({ x: scrollToOffset, animated: true });
   };
   const swipeGesture = Gesture.Pan()
     .simultaneousWithExternalGesture(flatListRef) // Allow FlatList to handle vertical scroll
@@ -125,7 +129,7 @@ export default function Home({navigation}) {
 
   // Animated style for swiping
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: translateX.value}],
+    transform: [{ translateX: translateX.value }],
   }));
 
   const test = () => {
@@ -138,15 +142,13 @@ export default function Home({navigation}) {
 
     // dispatch(updatePodcastListeners(6));
     return;
-    // dispatch(updateStreamListeners(9));
-    navigation.navigate('LiveStreaming');
     // navigation.navigate('GoLive');
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.screenTop}>
-        <View style={{width: '40%'}}>
+        <View style={{ width: '40%' }}>
           <View
             style={[
               styles.connectIcon,
@@ -195,36 +197,36 @@ export default function Home({navigation}) {
             }}>
             <TouchableOpacity
               onPress={() => setTab(1)}
-              style={[styles.tab, tab == 1 && {backgroundColor: '#f00044'}]}>
-              <Text style={[styles.tabText, tab == 1 && {color: '#fff'}]}>
+              style={[styles.tab, tab == 1 && { backgroundColor: '#f00044' }]}>
+              <Text style={[styles.tabText, tab == 1 && { color: '#fff' }]}>
                 Popular
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab(2)}
-              style={[styles.tab, tab == 2 && {backgroundColor: '#f00044'}]}>
-              <Text style={[styles.tabText, tab == 2 && {color: '#fff'}]}>
+              style={[styles.tab, tab == 2 && { backgroundColor: '#f00044' }]}>
+              <Text style={[styles.tabText, tab == 2 && { color: '#fff' }]}>
                 Live
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab(3)}
-              style={[styles.tab, tab == 3 && {backgroundColor: '#f00044'}]}>
-              <Text style={[styles.tabText, tab == 3 && {color: '#fff'}]}>
+              style={[styles.tab, tab == 3 && { backgroundColor: '#f00044' }]}>
+              <Text style={[styles.tabText, tab == 3 && { color: '#fff' }]}>
                 New Host
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab(4)}
-              style={[styles.tab, tab == 4 && {backgroundColor: '#f00044'}]}>
-              <Text style={[styles.tabText, tab == 4 && {color: '#fff'}]}>
+              style={[styles.tab, tab == 4 && { backgroundColor: '#f00044' }]}>
+              <Text style={[styles.tabText, tab == 4 && { color: '#fff' }]}>
                 Battle
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTab(5)}
-              style={[styles.tab, tab == 5 && {backgroundColor: '#f00044'}]}>
-              <Text style={[styles.tabText, tab == 5 && {color: '#fff'}]}>
+              style={[styles.tab, tab == 5 && { backgroundColor: '#f00044' }]}>
+              <Text style={[styles.tabText, tab == 5 && { color: '#fff' }]}>
                 Games
               </Text>
             </TouchableOpacity>
@@ -234,14 +236,14 @@ export default function Home({navigation}) {
       </View>
 
       <GestureDetector gesture={swipeGesture}>
-        <Animated.View style={[animatedStyle, {flex: 1}]}>
-          {tab == 1 ? (
+        <Animated.View style={[animatedStyle, { flex: 1 }]}>
+          {tab === 1 ? (
             <Popular navigation={navigation} />
-          ) : tab == 2 ? (
+          ) : tab === 2 ? (
             <Live navigation={navigation} flatListRef={flatListRef} />
-          ) : tab == 3 ? (
+          ) : tab === 3 ? (
             <NewHost />
-          ) : tab == 4 ? (
+          ) : tab === 4 ? (
             <Battle navigation={navigation} />
           ) : (
             <Games navigation={navigation} />
@@ -250,7 +252,9 @@ export default function Home({navigation}) {
       </GestureDetector>
     </View>
   );
-}
+};
+
+export default Home;
 
 const styles = StyleSheet.create({
   container: {

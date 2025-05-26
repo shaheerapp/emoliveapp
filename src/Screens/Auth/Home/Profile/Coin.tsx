@@ -11,18 +11,18 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import React, {useCallback, useState, useRef, useEffect} from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconF from 'react-native-vector-icons/FontAwesome6';
 import envVar from '../../../../config/envVar';
 import appStyles from '../../../../styles/styles';
 import PlayStore from '../../../../assets/svg/play.svg';
-import {formatNumber} from '../../../../utils/generalScript';
+import { formatNumber } from '../../../../utils/generalScript';
 import Toast from 'react-native-toast-message';
 
 import Cat from '../../../../assets/svg/cat.svg';
 import EasyPaisa from '../../../../assets/svg/easy.svg';
-import {colors} from '../../../../styles/colors';
+import { colors } from '../../../../styles/colors';
 import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
@@ -30,22 +30,24 @@ import BottomSheet, {
 import axiosInstance from '../../../../Api/axiosConfig';
 const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;
-import {useDispatch, useSelector} from 'react-redux';
-import {setPurchase} from '../../../../store/slice/accountSlice';
-import {useAppContext} from '../../../../Context/AppContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPurchase } from '../../../../store/slice/accountSlice';
+import { useAppContext } from '../../../../Context/AppContext';
+import { useFocusEffect } from '@react-navigation/native';
+
 // import audioService from '../../../../services/audioService';
 
 interface CoinProp {
   navigation: any;
 }
-export default function Coin({navigation}: CoinProp) {
+export default function Coin({ navigation }: CoinProp) {
   const dispatch = useDispatch();
-  const {purchase} = useSelector((state: any) => state.account);
-  const {userAuthInfo, tokenMemo} = useAppContext();
+  const { purchase } = useSelector((state: any) => state.account);
+  const { userAuthInfo, tokenMemo } = useAppContext();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const {user, setUser} = userAuthInfo;
-  const {token} = tokenMemo;
+  const { user, setUser } = userAuthInfo;
+  const { token } = tokenMemo;
   const [data, setData] = useState({
     type: '',
     combine: [],
@@ -56,9 +58,16 @@ export default function Coin({navigation}: CoinProp) {
   const handleOpenSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
   }, []);
+
   useEffect(() => {
     getPackages();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshUser();
+    }, [])
+  );
 
   // renders
   const renderBackdrop = useCallback(
@@ -77,7 +86,7 @@ export default function Coin({navigation}: CoinProp) {
       setLoading(true);
       const url = 'packages';
       const res = await axiosInstance.get(url);
-      // console.log(res.data);
+      console.log('Res1: ', res.data);
       setData((prev: any) => ({
         ...prev,
         type: 'diamonds',
@@ -85,7 +94,7 @@ export default function Coin({navigation}: CoinProp) {
         displaying: res.data.packages.diamonds,
       }));
     } catch (error) {
-      console.log(error);
+      console.log('Error1: ', error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +104,7 @@ export default function Coin({navigation}: CoinProp) {
     bottomSheetRef.current?.close();
     Alert.alert('Offline Transfer', 'Please Transfer offline Amount to Admin');
     try {
-      setData(prev => ({...prev, disabled: true}));
+      setData(prev => ({ ...prev, disabled: true }));
 
       const url = 'package/purchase';
       let data = {
@@ -103,38 +112,38 @@ export default function Coin({navigation}: CoinProp) {
         type: 'offline',
       };
       const res = await axiosInstance.post(url, data);
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Success',
-      //   text2: 'Request Sent 👋'
-      // });
-      console.log(res.data);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Request Sent 👋',
+      });
+      console.log('Res2: ', res.data);
     } catch (error) {
-      console.log(error);
+      console.log('Error2: ', error);
     } finally {
-      setData(prev => ({...prev, disabled: false}));
+      setData(prev => ({ ...prev, disabled: false }));
     }
   };
 
   const displayType = (type: any) => {
-    setData(prev => ({...prev, displaying: data.combine[type], type}));
+    setData(prev => ({ ...prev, displaying: data.combine[type], type }));
   };
   const refreshUser = async () => {
     try {
       setLoading(true);
-      const url = 'user';
+      const url = 'user/info';
       const res = await axiosInstance.get(url);
-      // console.log(res.data);
-      setUser(res.data);
+      console.log('Res3: ', res.data);
+      setUser(res.data.user);
     } catch (error) {
-      console.log(error);
+      console.log('Error3: ', error);
     } finally {
       setLoading(false);
     }
   };
   return (
     <View style={styles.container}>
-      <View style={{marginTop: Platform.OS == 'ios' ? 50 : 10}}>
+      <View style={{ marginTop: Platform.OS == 'ios' ? 50 : 10 }}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}>
@@ -145,17 +154,17 @@ export default function Coin({navigation}: CoinProp) {
         <Icon name="refresh" color={colors.complimentary} size={23} />
       </TouchableOpacity>
 
-      <View style={{alignSelf: 'center', alignItems: 'center'}}>
+      <View style={{ alignSelf: 'center', alignItems: 'center' }}>
         <Image
           style={appStyles.userAvatar}
           source={
             user.avatar
               ? {
-                  uri: envVar.API_URL + 'display-avatar/' + user.id,
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
+                uri: envVar.API_URL + 'display-avatar/' + user.id,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
               : require('../../../../assets/images/place.jpg')
           }
         />
@@ -188,7 +197,7 @@ export default function Coin({navigation}: CoinProp) {
           <ActivityIndicator
             animating={true}
             size={'large'}
-            style={[appStyles.indicatorStyle, {marginTop: deviceHeight * 0.2}]}
+            style={[appStyles.indicatorStyle, { marginTop: deviceHeight * 0.2 }]}
           />
         </View>
       ) : (
@@ -198,12 +207,12 @@ export default function Coin({navigation}: CoinProp) {
               onPress={() => displayType('diamonds')}
               style={[
                 styles.tab,
-                data.type == 'diamonds' && {borderBottomWidth: 2},
+                data.type == 'diamonds' && { borderBottomWidth: 2 },
               ]}>
               <Text
                 style={[
                   styles.tabText,
-                  data.type == 'diamonds' && {color: '#fff'},
+                  data.type == 'diamonds' && { color: '#fff' },
                 ]}>
                 Diamonds 💎
               </Text>
@@ -212,12 +221,12 @@ export default function Coin({navigation}: CoinProp) {
               onPress={() => displayType('beans')}
               style={[
                 styles.tab,
-                data.type == 'beans' && {borderBottomWidth: 2},
+                data.type == 'beans' && { borderBottomWidth: 2 },
               ]}>
               <Text
                 style={[
                   styles.tabText,
-                  data.type == 'beans' && {color: '#fff'},
+                  data.type == 'beans' && { color: '#fff' },
                 ]}>
                 Beans
               </Text>
@@ -260,18 +269,18 @@ export default function Coin({navigation}: CoinProp) {
           backgroundColor: colors.LG,
         }}>
         <BottomSheetView style={styles.contentContainer}>
-          <View style={{marginTop: 20, borderRadius: 30}}>
-            <Text style={[appStyles.regularTxtRg, {color: colors.body_text}]}>
+          <View style={{ marginTop: 20, borderRadius: 30 }}>
+            <Text style={[appStyles.regularTxtRg, { color: colors.body_text }]}>
               Chose Method :
             </Text>
-            <View style={{marginTop: 30}}>
+            <View style={{ marginTop: 30 }}>
               <TouchableOpacity style={styles.sheetBtn}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <PlayStore height={33} width={33} />
                   <Text
                     style={[
                       appStyles.paragraph1,
-                      {color: colors.complimentary, marginLeft: 15},
+                      { color: colors.complimentary, marginLeft: 15 },
                     ]}>
                     Google Play Store
                   </Text>
@@ -281,12 +290,12 @@ export default function Coin({navigation}: CoinProp) {
               <TouchableOpacity
                 style={styles.sheetBtn}
                 onPress={offlinePurchase}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Cat height={33} width={33} />
                   <Text
                     style={[
                       appStyles.paragraph1,
-                      {color: colors.complimentary, marginLeft: 15},
+                      { color: colors.complimentary, marginLeft: 15 },
                     ]}>
                     Emo Live Offline
                   </Text>
@@ -299,12 +308,12 @@ export default function Coin({navigation}: CoinProp) {
                   navigation.navigate('PurchaseVIP');
                 }}
                 style={styles.sheetBtn}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <EasyPaisa height={33} width={33} />
                   <Text
                     style={[
                       appStyles.paragraph1,
-                      {color: colors.complimentary, marginLeft: 15},
+                      { color: colors.complimentary, marginLeft: 15 },
                     ]}>
                     Easypaisa
                   </Text>
@@ -493,7 +502,7 @@ const Diamond = ({
         data={data.displaying}
         numColumns={3}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             disabled={data.disabled}
             style={styles.card}
@@ -509,7 +518,7 @@ const Diamond = ({
               }}
               source={require('../../../../assets/images/diamonds.png')}
             />
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.cardPeriod}>💎 {item.count}</Text>
             </View>
             <View style={styles.cardAmount}>
@@ -528,7 +537,7 @@ interface Beans {
   data: any;
   dispatch: any;
 }
-const Beans = ({navigation, handleOpenSheet, data, dispatch}: Beans) => {
+const Beans = ({ navigation, handleOpenSheet, data, dispatch }: Beans) => {
   return (
     <View
       style={{
@@ -539,7 +548,7 @@ const Beans = ({navigation, handleOpenSheet, data, dispatch}: Beans) => {
         data={data.displaying}
         numColumns={3}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             disabled={data.disabled}
             style={styles.card}
@@ -554,7 +563,7 @@ const Beans = ({navigation, handleOpenSheet, data, dispatch}: Beans) => {
               }}
               source={require('../../../../assets/images/beans.png')}
             />
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.cardPeriod}>🫘 {item.count}</Text>
             </View>
             <View style={styles.cardAmount}>

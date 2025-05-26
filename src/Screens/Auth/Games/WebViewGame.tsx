@@ -12,6 +12,7 @@ import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../../../styles/colors';
 import appStyles from '../../../styles/styles';
+import KeepAwake from 'react-native-keep-awake';
 
 
 interface Props {
@@ -20,10 +21,39 @@ interface Props {
 }
 
 const WebViewGame: React.FC<Props> = ({ navigation, route }) => {
-    const { url, user, code } = route.params;
+    const { url, user, code, roomId } = route.params;
     const [loading, setLoading] = useState(true);
     const webViewRef = useRef<any>(null);
     const [showWebView, setShowWebView] = useState(true);
+
+    useEffect(() => {
+        if (showWebView) {
+            KeepAwake.activate();
+        }
+
+        return () => {
+            KeepAwake.deactivate();
+        };
+    }, [showWebView]);
+
+
+    const triggerWalletUpdate = () => {
+        const walletUpdatePayload = {
+            UserId: user?.id || 'guest_001',
+        };
+
+        const jsCode = `window.walletUpdate && window.walletUpdate(${JSON.stringify(walletUpdatePayload)});`;
+        webViewRef.current?.injectJavaScript(jsCode);
+        console.log('Sent walletUpdate to WebView:', walletUpdatePayload);
+    };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            triggerWalletUpdate();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
 
     const handlemessage = (event: any) => {
@@ -39,18 +69,17 @@ const WebViewGame: React.FC<Props> = ({ navigation, route }) => {
                     appId: 2537349530,            // your actual appId
                     userId: user?.id || 'guest_001',
                     code: code, // should be fetched before
-                    roomId: 'room123',
+                    roomId: roomId ? roomId : 'room123',
                     gameMode: '3',
                     language: 'en',
                     gameConfig: {
                         sceneMode: 0,
-                        currencyIcon: require('../../../assets/svg/beans.svg'),
+                        currencyIcon: require('../../../assets/svg/diamond.svg'),
                     },
                     gsp: 101,
                 };
 
                 console.log('callback: ', configData);
-
 
                 const jsCode = `window.${jsCallback}(${JSON.stringify(configData)});`;
                 webViewRef.current?.injectJavaScript(jsCode);
@@ -64,7 +93,7 @@ const WebViewGame: React.FC<Props> = ({ navigation, route }) => {
 
             else if (jsCallback.includes('gameRecharge')) {
                 console.log('Game requested recharge/top-up.');
-                // Navigate to your top-up screen or show modal
+                navigation.navigate('Coin');
             }
 
             else if (jsCallback.includes('gameLoaded')) {

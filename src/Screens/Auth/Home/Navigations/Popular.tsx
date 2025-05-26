@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axiosInstance from '../../../../Api/axiosConfig';
-import {colors} from '../../../../styles/colors';
+import { colors } from '../../../../styles/colors';
 import {
   setPodcast,
   setPodcasts,
@@ -19,15 +19,19 @@ import {
 } from '../../../../store/slice/podCastSlice';
 import envVar from '../../../../config/envVar';
 import appStyles from '../../../../styles/styles';
-import {useDispatch, useSelector} from 'react-redux';
-import {useAppContext} from '../../../../Context/AppContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAppContext } from '../../../../Context/AppContext';
 
-export default function Popular({navigation}) {
-  const {podcasts} = useSelector((state: any) => state.podcast);
-  const {tokenMemo, userAuthInfo} = useAppContext();
-  const {token} = tokenMemo;
+interface Props {
+  navigation: any;
+}
+
+const Popular: React.FC<Props> = ({ navigation }) => {
+  const { podcasts } = useSelector((state: any) => state.podcast);
+  const { tokenMemo, userAuthInfo } = useAppContext();
+  const { token } = tokenMemo;
   const [error, setError] = useState('');
-  const {setUser} = userAuthInfo;
+  const { setUser } = userAuthInfo;
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -36,12 +40,12 @@ export default function Popular({navigation}) {
     getPodcasts();
 
     // Set interval to fetch podcasts every 3 seconds
-    const intervalId = setInterval(() => {
-      getPodcasts();
-    }, 3000);
+    // const intervalId = setInterval(() => {
+    //   getPodcasts();
+    // }, 3000);
 
     // Cleanup function to clear interval when the component unmounts
-    return () => clearInterval(intervalId);
+    return () => clearInterval(1);
   }, []);
 
   const getPodcasts = async () => {
@@ -53,6 +57,12 @@ export default function Popular({navigation}) {
       // console.log(res.data);
 
       if (res.data.podcast.length) {
+        // res.data.podcast.forEach((podcast: any) => {
+        //   console.log('Podcast Title:', podcast.title);
+        //   console.log('Channel:', podcast.coin_earned);
+        //   console.log('User Name:', podcast.user.first_name + ' ' + podcast.user.last_name);
+        //   console.log('Email:', podcast.user.email);
+        // });
         dispatch(setPodcasts(res.data.podcast));
       }
     } catch (error: any) {
@@ -86,8 +96,8 @@ export default function Popular({navigation}) {
   };
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{marginTop: 20}}>
+    <View style={{ flex: 1 }}>
+      <View style={{ marginTop: 20 }}>
         {error && <Text style={[appStyles.errorText]}>{error}</Text>}
         {/* <Text style={{color: '#fff'}} onPress={() => getPodcasts()}>
           get Podcasts
@@ -102,7 +112,7 @@ export default function Popular({navigation}) {
             contentContainerStyle={{
               paddingBottom: 120,
             }}
-            renderItem={({item}: any) => (
+            renderItem={({ item }: any) => (
               <TouchableOpacity
                 style={styles.PodcastUser}
                 onPress={() => joinPodcast(item)}>
@@ -116,12 +126,12 @@ export default function Popular({navigation}) {
                     source={
                       item.user.avatar
                         ? {
-                            uri:
-                              envVar.API_URL + 'display-avatar/' + item.user.id,
-                            headers: {
-                              Authorization: `Bearer ${token}`,
-                            },
-                          }
+                          uri:
+                            envVar.API_URL + 'display-avatar/' + item.user.id,
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
                         : require('../../../../assets/images/parts/placeBlack.png')
                     }
                   />
@@ -138,11 +148,10 @@ export default function Popular({navigation}) {
                       color={colors.complimentary}
                       size={20}
                     />
-                    <Text style={styles.userFollower}>10.51K</Text>
+                    <Text style={styles.userFollower}>{item.coin_earned}</Text>
                   </TouchableOpacity>
                   <Text style={styles.userTxt}>
-                    {item.user.first_name + ' ' + item.user.last_name} :{' '}
-                    {item.id}
+                    {item.user.first_name + ' ' + item.user.last_name}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -152,7 +161,9 @@ export default function Popular({navigation}) {
       </View>
     </View>
   );
-}
+};
+
+export default Popular;
 
 const styles = StyleSheet.create({
   waveform: {
@@ -205,3 +216,4 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 });
+

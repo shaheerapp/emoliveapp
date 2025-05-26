@@ -8,7 +8,6 @@ export default env = {
   WEB_CLIENT_ID: '', // for google sign in
   IOS_CLIENT_ID: '', // for google sign in
   REVERB_KEY: 'xjceygqczxvyasqh0c2d',
-  JWT_SECRET: 'MzansiSuperSecretKey123!@#',
 };
 
 // AGORA_APP_CERTIFICATE=9f392b5e26ad4b6b8a0a4830d00c59a6

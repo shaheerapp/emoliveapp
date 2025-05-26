@@ -10,10 +10,10 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import appStyles from '../../../../styles/styles';
-import {colors} from '../../../../styles/colors';
-import {useSelector, useDispatch} from 'react-redux';
+import { colors } from '../../../../styles/colors';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axiosInstance from '../../../../Api/axiosConfig';
 import {
@@ -23,16 +23,16 @@ import {
   updateVisitProfile,
 } from '../../../../store/slice/usersSlice';
 import envVar from '../../../../config/envVar';
-import {useAppContext} from '../../../../Context/AppContext';
+import { useAppContext } from '../../../../Context/AppContext';
 const deviceHeight = Dimensions.get('window').height;
 interface SearchScreenProps {
   navigation: any;
 }
-export default function Search({navigation}: SearchScreenProps) {
-  const {userAuthInfo, tokenMemo} = useAppContext();
-  const {token} = tokenMemo;
+export default function Search({ navigation }: SearchScreenProps) {
+  const { userAuthInfo, tokenMemo } = useAppContext();
+  const { token } = tokenMemo;
   const dispatch = useDispatch();
-  const {users, loading} = useSelector((state: any) => state.users);
+  const { users, loading } = useSelector((state: any) => state.users);
 
   const [error, setError] = useState('');
   const [searchLoader, setSearchLoader] = useState(false);
@@ -50,7 +50,7 @@ export default function Search({navigation}: SearchScreenProps) {
 
   const followUser = async (item: any) => {
     try {
-      setSubLoader({loading: true, id: item.id});
+      setSubLoader({ loading: true, id: item.id });
       dispatch(setLoading(true));
 
       const url = item.is_followed
@@ -63,13 +63,13 @@ export default function Search({navigation}: SearchScreenProps) {
       setError(error.message);
     } finally {
       dispatch(setLoading(false));
-      setSubLoader({loading: false, id: null});
+      setSubLoader({ loading: false, id: null });
     }
   };
 
   const searchAccount = async () => {
     try {
-      if (query.length < 4) return;
+      if (query.length < 4) { return; }
       setSearchLoader(true);
       const url = `/user/search-account/${query}`;
       const res = await axiosInstance.get(url);
@@ -105,10 +105,15 @@ export default function Search({navigation}: SearchScreenProps) {
           style={styles.input}
           placeholder="Enter User name...."
           autoCapitalize="none"
-          onChangeText={setQuery}
-          // onChangeText={text => searchAccount(text)}
+          onChangeText={text => {
+            setQuery(text);
+            if (text.length === 0) { setSearchUsers([]); }
+          }}
+          onSubmitEditing={searchAccount}
+          value={query}
           placeholderTextColor={colors.dark_gradient}
         />
+
         {searchLoader ? (
           <ActivityIndicator
             animating={searchLoader}
@@ -116,14 +121,14 @@ export default function Search({navigation}: SearchScreenProps) {
             color={'blue'}
           />
         ) : (
-          <TouchableOpacity onPress={getUsers} style={{marginLeft: 20}}>
+          <TouchableOpacity onPress={searchAccount} style={{ marginLeft: 20 }}>
             {/* <TouchableOpacity onPress={searchAccount} style={{marginLeft: 20}}> */}
             <Icon name="magnify" size={25} color={colors.complimentary} />
           </TouchableOpacity>
         )}
       </View>
       {error && (
-        <Text style={[appStyles.errorText, {marginVertical: 10}]}>{error}</Text>
+        <Text style={[appStyles.errorText, { marginVertical: 10 }]}>{error}</Text>
       )}
       {loading && !subLoader.loading ? (
         <ActivityIndicator
@@ -133,15 +138,15 @@ export default function Search({navigation}: SearchScreenProps) {
           color={colors.accent}
         />
       ) : (
-        <View style={{marginTop: 20}}>
-          <View style={{height: deviceHeight * 0.8}}>
+        <View style={{ marginTop: 20 }}>
+          <View style={{ height: deviceHeight * 0.8 }}>
             <FlatList
               refreshing={loading}
               data={searchUsers.length ? searchUsers : users}
               onRefresh={getUsers}
-              contentContainerStyle={{paddingBottom: 20}}
+              contentContainerStyle={{ paddingBottom: 20 }}
               keyExtractor={item => item.id?.toString()}
-              renderItem={({item}: any) => (
+              renderItem={({ item }: any) => (
                 <View style={styles.userSection}>
                   <TouchableOpacity
                     disabled={loading}
@@ -151,19 +156,19 @@ export default function Search({navigation}: SearchScreenProps) {
                     }}
                     style={styles.profile}>
                     <Image
-                      style={{width: 50, height: 50, borderRadius: 25}}
+                      style={{ width: 50, height: 50, borderRadius: 25 }}
                       source={
                         item.avatar
                           ? {
-                              uri: envVar.API_URL + 'display-avatar/' + item.id,
-                              headers: {
-                                Authorization: `Bearer ${token}`,
-                              },
-                            }
+                            uri: envVar.API_URL + 'display-avatar/' + item.id,
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          }
                           : require('../../../../assets/images/place.jpg')
                       }
                     />
-                    <View style={{marginLeft: 20}}>
+                    <View style={{ marginLeft: 20 }}>
                       <Text style={styles.userText}>
                         {item.first_name + ' ' + item.last_name}
                       </Text>
@@ -175,7 +180,7 @@ export default function Search({navigation}: SearchScreenProps) {
                     onPress={() => followUser(item)}
                     style={[
                       styles.followBtn,
-                      item.is_followed && {backgroundColor: '#494759'},
+                      item.is_followed && { backgroundColor: '#494759' },
                     ]}>
                     {subLoader.loading && subLoader.id == item.id ? (
                       <ActivityIndicator

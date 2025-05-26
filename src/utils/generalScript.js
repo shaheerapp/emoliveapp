@@ -1,20 +1,14 @@
-export const formatNumber = number => {
-  if (typeof number !== 'number' || isNaN(number)) {
-    return '0'; // Fallback for invalid input
-  }
+export const formatNumber = input => {
+  const number = Number(input);
+  if (isNaN(number)) { return '0'; }
 
-  const absNumber = Math.abs(number); // Handle negative numbers if needed
+  const absNumber = Math.abs(number);
 
   if (absNumber >= 1000000) {
-    // Millions (M)
-    const value = absNumber / 1000000;
-    return `${value % 1 === 0 ? value : value.toFixed(1)}M`;
+    return `${(absNumber / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
   } else if (absNumber >= 1000) {
-    // Thousands (k)
-    const value = absNumber / 1000;
-    return `${value % 1 === 0 ? value : value.toFixed(1)}k`;
+    return `${(absNumber / 1000).toFixed(1).replace(/\.0$/, '')}k`;
   } else {
-    // Less than 1000, return as is
     return absNumber.toString();
   }
 };

@@ -48,6 +48,8 @@ PODS:
   - AppAuth/ExternalUserAgent (1.7.6):
     - AppAuth/Core
   - boost (1.84.0)
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - DoubleConversion (1.1.6)
   - FBAEMKit (17.4.0):
     - FBSDKCoreKit_Basics (= 17.4.0)
@@ -1344,7 +1346,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-blob-util (0.21.3):
+  - react-native-blob-util (0.21.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1430,6 +1432,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-keep-awake (4.0.0):
+    - React
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-ota-hot-update (2.0.7):
@@ -1456,6 +1460,7 @@ PODS:
     - Yoga
   - react-native-quick-md5 (3.0.6):
     - React-Core
+  - react-native-safe-area-context (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2102,16 +2107,17 @@ PODS:
   - SocketRocket (0.7.1)
   - SSZipArchive (2.4.3)
   - TweetNacl (1.0.2)
-  - VisionCamera (4.6.4):
-    - VisionCamera/Core (= 4.6.4)
-    - VisionCamera/React (= 4.6.4)
-  - VisionCamera/Core (4.6.4)
-  - VisionCamera/React (4.6.4):
+  - VisionCamera (4.6.3):
+    - VisionCamera/Core (= 4.6.3)
+    - VisionCamera/React (= 4.6.3)
+  - VisionCamera/Core (4.6.3)
+  - VisionCamera/React (4.6.3):
     - React-Core
   - Yoga (0.0.0)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
@@ -2155,6 +2161,7 @@ DEPENDENCIES:
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-keep-awake (from `../node_modules/react-native-keep-awake`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-ota-hot-update (from `../node_modules/react-native-ota-hot-update`)
   - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
@@ -2227,6 +2234,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -2310,6 +2319,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fbsdk-next"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-keep-awake:
+    :path: "../node_modules/react-native-keep-awake"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-ota-hot-update:
@@ -2407,6 +2418,7 @@ SPEC CHECKSUMS:
   AgoraRtcEngine_iOS: 38b5e0a49bbad5616f284e6a4f9e4f5bb3fb3b2e
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   FBAEMKit: 58cb5f302cdd715a56d4c1d0dfdd2e423ac1421a
   FBLazyVector: be509404b5de73a64a74284edcaf73a5d1e128b1
@@ -2455,18 +2467,17 @@ SPEC CHECKSUMS:
   React-logger: d42a53754a7252cc7a851315f0da2e46b450ea92
   React-Mapbuffer: 89885d1518433a462fe64b68bf5e097997380090
   React-microtasksnativemodule: 36341e09dcd1df535503e6ed2ddf88f10da56d52
-  react-native-agora: ceb673fca003261b20c96a0ae083490e99a6b340
+  react-native-agora: 0f04657e844b84527aae6a1a4ac01dd68404a8b9
   react-native-blob-util: 5c9cd69d650932ed699ed51fe026a55aeb070bca
-  react-native-chat-sdk: b2cdd359c2567748e5d7e5ce5b691ee05684ab28
-  react-native-date-picker: 2a07230cec3013ce67503d3ad8de4d909e2cd213
-  react-native-fbsdk-next: 52f81e60eb3e8e0e06cf9728b4572d3509ca9d01
+  react-native-chat-sdk: 657280afe943d79d9bcdefb01fdb8c43c7deb243
+  react-native-date-picker: d668a2e77115cf64128c2e0106afd828470294bc
+  react-native-fbsdk-next: 8dc76b449a731540591366c7f2874df3701da8bd
   react-native-image-picker: 91f4e8dd458db2acdb278479e960bc224cbf0217
+  react-native-keep-awake: 21ff40767cde4bd81021ffee12480aee4b5b91bb
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-ota-hot-update: 1cc292533d0818e9bf4b7afb7998bbb6020c90be
-  react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
   react-native-ota-hot-update: 5485a20e55a78cd490c90ecadfc426362517cd5f
   react-native-quick-md5: 368e091d448aa3d32a0cbb5d3ce883ae85b72596
-  react-native-safe-area-context: cd38c1fc5fbaff96bf0999b471d0dcb8610e124d
+  react-native-safe-area-context: 5e53e2b0fc3a2994ad0c89a2486e545b6566d8c4
   react-native-webview: cb6ca8e0928ef826bdf061a39b7db56ab4d4d480
   React-nativeconfig: 539ff4de6ce3b694e8e751080568c281c84903ce
   React-NativeModulesApple: 702246817c286d057e23fe4b1302019796e62521
@@ -2510,7 +2521,7 @@ SPEC CHECKSUMS:
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   VisionCamera: 030bcbf22791d698926e7c0e3b804126165e62e3
-  Yoga: be6f55a028e86c83ae066f018e9b5d24ffc45436
+  Yoga: 2a5ae8f7db3c675ff5a781fb5d99c5f7a5d2fc11
 
 PODFILE CHECKSUM: d24141268e4fb867ce6b8a8887d9308dda142efa
 
