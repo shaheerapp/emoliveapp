@@ -35,41 +35,41 @@ export default function PodcastGuest({
       }}>
       <Image
         source={
-          item.user.avatar
+          item?.user.avatar
             ? {
-                uri: envVar.API_URL + 'display-avatar/' + item.user.id,
+                uri: envVar.API_URL + 'display-avatar/' + item?.user.id,
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
               }
             : require('../../../../../assets/images/place.jpg')
         }
-        style={styles.chatAvatar}
+        style={{width:50,height:50}}
       />
-      <Text
+      {/* <Text
         style={[
           appStyles.bodyMd,
           {color: colors.complimentary, textAlign: 'center'},
         ]}>
-        {item.user.first_name + ' ' + item.user.last_name}
-      </Text>
-      <View style={styles.points}>
+        {item?.user.first_name + ' ' + item?.user.last_name}
+      </Text> */}
+      {/* <View style={styles.points}>
         <Icon name="star-four-points" size={15} color={colors.dominant} />
         <Text style={[appStyles.small, {color: colors.dominant}]}>3754</Text>
-      </View>
-      {item.user.id == user.id}
-      <TouchableOpacity
+      </View> */}
+      {item?.user.id == user.id}
+      {/* <TouchableOpacity
         onPress={() => muteUnmuteUser(item)}
         style={{
           position: 'absolute',
-          right: 10,
+          right: -10,
         }}>
         <Icon
-          name={item.muted ? 'microphone-off' : 'microphone'}
+          name={item?.muted ? 'microphone-off' : 'microphone'}
           size={25}
           color={colors.complimentary}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </TouchableOpacity>
   );
 }

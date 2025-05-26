@@ -139,9 +139,7 @@ const BottomSection = ({
               paddingHorizontal: 10,
             },
       ]}>
-        <View style={{width:"60%",alignSelf:"center"}}>
-          <Image source={IMAGES.stars} style={{width:"100%",height:30}}/>
-        </View>
+       
       <View
         style={[
           styles.sheetMessage,

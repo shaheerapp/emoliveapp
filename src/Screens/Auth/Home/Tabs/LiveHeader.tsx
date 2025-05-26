@@ -93,7 +93,7 @@ export default function LiveHeader({
                   }
                 : require('../../../../assets/images/place.jpg')
             }
-            style={styles.avatar}
+            style={[styles.avatar, {flexDirection: 'row'}]}
           />
           <View>
             <Text style={[appStyles.regularTxtMd]}>😊😴</Text>
@@ -108,20 +108,20 @@ export default function LiveHeader({
             LV:1
           </Text>
         </View> */}
-            {/* {host.id == user.id && (
-          <TouchableOpacity
-            style={styles.addBtn}
-            onPress={() => {
-              // console.log(user);
-              // console.log(liveEvent);
-              // console.log(host, 'ssss');
-              // dispatch(updatedMuteUnmuteUser({type: 'single', id: 1}));
-              // Alert.alert('Coming Soon', '!!');
-            }}>
-            <Icon name="plus" color="#fff" size={20} />
-          </TouchableOpacity>
-        )} */}
           </View>
+          {host.id == user.id && (
+            <TouchableOpacity
+              style={styles.addBtn}
+              onPress={() => {
+                // console.log(user);
+                // console.log(liveEvent);
+                // console.log(host, 'ssss');
+                // dispatch(updatedMuteUnmuteUser({type: 'single', id: 1}));
+                // Alert.alert('Coming Soon', '!!');
+              }}>
+              <Icon name="plus" color="#fff" size={20} />
+            </TouchableOpacity>
+          )}
         </ImageBackground>
       </View>
       {/* <ActivityIndicator
@@ -129,7 +129,7 @@ export default function LiveHeader({
         size={'small'}
         color={colors.accent}
       /> */}
-      <View style={{width: '50%',}}>
+      <View style={{width: '50%'}}>
         <View style={styles.right}>
           {/* <View>
           <Text
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // width: '75%',
-    // height: '120%',
+    maxWidth: '130%',
+    minWidth: '105%',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 7,
     resizeMode: 'cover',
-    gap: 7,
+    gap: 4,
   },
   avatar: {width: 40, height: 40, borderRadius: 40},
   addBtn: {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   right: {
     flexDirection: 'row',
     // width: '35%',
-    justifyContent:"flex-end",
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   header2: {

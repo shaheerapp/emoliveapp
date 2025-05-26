@@ -65,8 +65,8 @@ const appStyles = StyleSheet.create({
     fontFamily: 'Kanit',
   },
   userAvatar: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     borderRadius: 80,
     borderColor: colors.lines,
     borderWidth: 1,

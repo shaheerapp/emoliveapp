@@ -3,7 +3,7 @@ import {Platform, StyleSheet} from 'react-native';
 import appStyles from '../../../../../styles/styles';
 import {useSelector} from 'react-redux';
 const liveStyles = StyleSheet.create({
-  chatAvatar: {width: 50, height: 50, borderRadius: 25},
+  chatAvatar: {width: 40, height: 40, borderRadius: 25},
   sofa: {
     width: 60,
     height: 60,

@@ -13,27 +13,27 @@ import {
   ImageBackground,
   FlatList,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import hotUpdate from 'react-native-ota-hot-update';
 
-import { colors } from '../../../../styles/colors';
-import { ChatClient } from 'react-native-agora-chat';
+import {colors} from '../../../../styles/colors';
+import {ChatClient} from 'react-native-agora-chat';
 import appStyles from '../../../../styles/styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import axiosInstance from '../../../../Api/axiosConfig';
 import envVar from '../../../../config/envVar';
-import { useAppContext } from '../../../../Context/AppContext';
-import { IMAGES } from '../../../../assets/images';
-import { actionItems, characterItems, otherItems } from '../../../../utils/data';
+import {useAppContext} from '../../../../Context/AppContext';
+import {IMAGES} from '../../../../assets/images';
+import {actionItems, characterItems, otherItems} from '../../../../utils/data';
 
-export default function Search({ navigation }) {
+export default function Search({navigation}) {
   const [progress, setProgress] = useState(100);
   const [updateModal, setUpdateModal] = useState(false);
-  const { userAuthInfo, tokenMemo } = useAppContext();
-  const { user, setUser } = userAuthInfo;
+  const {userAuthInfo, tokenMemo} = useAppContext();
+  const {user, setUser} = userAuthInfo;
   const chatClient = ChatClient.getInstance();
-  const { token } = tokenMemo;
+  const {token} = tokenMemo;
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +69,7 @@ export default function Search({ navigation }) {
         Alert.alert('Clone project failed!', msg, [
           {
             text: 'Cancel',
-            onPress: () => { },
+            onPress: () => {},
             style: 'cancel',
           },
         ]);
@@ -91,7 +91,7 @@ export default function Search({ navigation }) {
         Alert.alert('Pull project failed!', msg, [
           {
             text: 'Cancel',
-            onPress: () => { },
+            onPress: () => {},
             style: 'cancel',
           },
         ]);
@@ -104,7 +104,7 @@ export default function Search({ navigation }) {
           },
           {
             text: 'Cancel',
-            onPress: () => { },
+            onPress: () => {},
             style: 'cancel',
           },
         ]);
@@ -146,15 +146,18 @@ export default function Search({ navigation }) {
     console.log('i am clicked');
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <TouchableOpacity
       style={styles.iconBtn}
       onPress={() => {
-        if (item.onPress) { item.onPress(); }
-        else if (item.navigation && !(item.tittle == 'Terms')) { navigation.navigate(item.navigation); }
+        if (item.onPress) {
+          item.onPress();
+        } else if (item.navigation && !(item.tittle == 'Terms')) {
+          navigation.navigate(item.navigation);
+        }
       }}>
       <Image source={item.icon} style={styles.icon} resizeMode="contain" />
-      <Text style={[appStyles.bodyMd, { color: colors.complimentary }]}>
+      <Text style={[appStyles.bodyMd, {color: colors.complimentary}]}>
         {item.title}
       </Text>
     </TouchableOpacity>
@@ -173,7 +176,7 @@ export default function Search({ navigation }) {
       ) : (
         <FlatList
           data={[1]}
-          renderItem={({ index }) => (
+          renderItem={({index}) => (
             <>
               <View
                 style={{
@@ -183,73 +186,80 @@ export default function Search({ navigation }) {
                 <View style={styles.imageContainer}>
                   <View style={[appStyles.userAvatar, styles.logoContainer]}>
                     <Image
-                      style={{ width: '100%', height: '100%' }}
+                      style={{width: '100%', height: '100%'}}
                       source={
                         user.avatar
                           ? {
-                            uri: envVar.API_URL + 'display-avatar/' + user.id,
-                            headers: {
-                              Authorization: `Bearer ${token}`,
-                            },
-                          }
+                              uri: envVar.API_URL + 'display-avatar/' + user.id,
+                              headers: {
+                                Authorization: `Bearer ${token}`,
+                              },
+                            }
                           : require('../../../../assets/images/place.jpg')
                       }
                     />
                   </View>
-                  <Image style={{ width: 90, height: 50 }} source={IMAGES.logo} />
+                  <Image style={{width: 90, height: 50}} source={IMAGES.logo} />
                 </View>
                 <Text
-                  style={[appStyles.display1, { color: 'white' }]}
+                  style={[appStyles.title1, {color: 'white'}]}
                   onPress={getUnreadMessages}>
                   {user.first_name + ' ' + user.last_name}{' '}
                 </Text>
                 <View style={styles.userInfo}>
-                  <Text style={styles.userDesc}>{user?.email}</Text>
+                  <Text numberOfLines={1} style={styles.userDesc}>
+                    {/* {user?.email} */}Agency Owner
+                  </Text>
                   <View
                     style={{
                       width: 1.2,
                       height: 30,
                       backgroundColor: 'white',
                       alignSelf: 'center',
+                      marginHorizontal: 10,
                     }}
                   />
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Image
-                      style={{ width: 15, height: 15 }}
+                      style={{width: 15, height: 15}}
                       source={IMAGES.send}
                       resizeMode="contain"
                     />
 
-                    <Text style={[styles.userDesc, { marginLeft: 2 }]}>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.userDesc, {marginLeft: 2}]}>
                       {user.address ? user.address : 'Please Provide'}
                     </Text>
                     <Image
-                      style={{ width: 15, height: 15 }}
+                      style={{width: 15, height: 15}}
                       source={IMAGES.arrowDown}
                       resizeMode="contain"
                     />
                   </View>
                 </View>
 
-                <View style={[styles.accountInfo, { width: '90%' }]}>
-                  <View style={[styles.gender, { backgroundColor: 'white' }]}>
-                    <Text style={[styles.levelTxt, { color: colors.dominant }]}>
+                <View style={[styles.accountInfo, {width: '90%'}]}>
+                  <View style={[styles.gender, {backgroundColor: 'white'}]}>
+                    <Text style={[styles.levelTxt, {color: colors.dominant}]}>
                       {user.gender}
                     </Text>
                   </View>
-                  <View style={[styles.gender, { backgroundColor: colors.green }]}>
-                    <Text style={[styles.levelTxt, { color: colors.white }]}>
+                  <View
+                    style={[styles.gender, {backgroundColor: colors.green}]}>
+                    <Text style={[styles.levelTxt, {color: colors.white}]}>
                       ID:17
                     </Text>
                   </View>
-                  <View style={[styles.gender, { backgroundColor: colors.yellow }]}>
+                  <View
+                    style={[styles.gender, {backgroundColor: colors.yellow}]}>
                     {/* <Icon name="security" color="#fff" size={20} /> */}
-                    <Text style={[styles.levelTxt, { color: colors.white }]}>
+                    <Text style={[styles.levelTxt, {color: colors.white}]}>
                       Top-up Agent..
                     </Text>
                     <Image
-                      style={{ width: 15, height: 15 }}
+                      style={{width: 15, height: 15}}
                       source={IMAGES.arrow}
                       resizeMode="contain"
                       tintColor={colors.white}
@@ -259,21 +269,21 @@ export default function Search({ navigation }) {
                     <Text
                       style={[
                         styles.levelTxt,
-                        { color: 'white', fontWeight: '900' },
+                        {color: 'white', fontWeight: '900'},
                       ]}>
                       Check VIP
                     </Text>
-                    <View style={{ position: 'absolute', right: -1.5, top: -2 }}>
+                    <View style={{position: 'absolute', right: -1.5, top: -2}}>
                       <Image
-                        style={{ width: 23, height: 23 }}
+                        style={{width: 23, height: 23}}
                         source={IMAGES.crown}
                         resizeMode="contain"
-                      // tintColor={colors.white}
+                        // tintColor={colors.white}
                       />
                     </View>
                   </View>
                   <Image
-                    style={{ width: 25, height: 25 }}
+                    style={{width: 25, height: 25}}
                     source={IMAGES.mic}
                     resizeMode="contain"
                   />
@@ -302,26 +312,26 @@ export default function Search({ navigation }) {
                 resizeMode="contain"
                 style={styles.gradient}>
                 <View style={styles.gradientView}>
-                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                  <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     14
                   </Text>
-                  <Text style={[appStyles.title1, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Fans
                   </Text>
                 </View>
                 <View style={styles.gradientView}>
-                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                  <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     40
                   </Text>
-                  <Text style={[appStyles.title1, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Following
                   </Text>
                 </View>
                 <View style={styles.gradientView}>
-                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                  <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     44
                   </Text>
-                  <Text style={[appStyles.title1, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Friends
                   </Text>
                 </View>
@@ -331,18 +341,18 @@ export default function Search({ navigation }) {
                 resizeMode="contain"
                 style={[styles.gradient, styles.bottomgradient]}>
                 <View style={styles.gradientView}>
-                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                  <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     40
                   </Text>
-                  <Text style={[appStyles.title1, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Diamonds
                   </Text>
                 </View>
                 <View style={styles.gradientView}>
-                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
+                  <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     44
                   </Text>
-                  <Text style={[appStyles.title1, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Beans
                   </Text>
                 </View>
@@ -358,14 +368,14 @@ export default function Search({ navigation }) {
                       tintColor: colors.white,
                     }}
                   />
-                  <Text style={[appStyles.headline, styles.topgradientItem]}>
+                  <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Top Up Agent
                   </Text>
                 </View>
               </View>
               {/* account */}
 
-              <View style={{ marginTop: -20 }}>
+              <View style={{marginTop: -20}}>
                 <FlatList
                   data={actionItems}
                   renderItem={renderItem}
@@ -373,7 +383,7 @@ export default function Search({ navigation }) {
                   numColumns={4}
                   contentContainerStyle={styles.grid}
                 />
-                <Text style={[appStyles.title1, { color: colors.complimentary }]}>
+                <Text style={[appStyles.title1, {color: colors.complimentary}]}>
                   Others
                 </Text>
                 <FlatList
@@ -394,14 +404,14 @@ export default function Search({ navigation }) {
           {/* Modal Content */}
 
           <View style={styles.modalView}>
-            <Text style={[appStyles.title1, { color: colors.complimentary }]}>
+            <Text style={[appStyles.title1, {color: colors.complimentary}]}>
               Update Available
             </Text>
-            <View style={{ marginVertical: 20 }}>
+            <View style={{marginVertical: 20}}>
               <Text
                 style={[
                   appStyles.regularTxtMd,
-                  { color: colors.body_text, textAlign: 'center' },
+                  {color: colors.body_text, textAlign: 'center'},
                 ]}>
                 Please Wait new update is being downloading...
               </Text>
@@ -454,25 +464,28 @@ const styles = StyleSheet.create({
   },
   gradient: {
     width: '100%',
-    height: 50,
+    // height: 50,÷
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignSelf: 'center',
     marginVertical: 20,
+    paddingVertical: 8,
   },
   bottomgradient: {
     top: -20,
     width: '100%',
     justifyContent: 'center',
-    height: 50,
-    marginVertical: 10, gap: 35,
+    // height: 50,
+    marginVertical: 10,
+    gap: 35,
+    paddingVertical: 7,
   },
   item: {
     marginHorizontal: 4,
     alignItems: 'center',
   },
-  gradientView: { top: 4 },
-  topgradientItem: { textAlign: 'center', color: colors.white },
+  gradientView: {top: 0},
+  topgradientItem: {textAlign: 'center', color: colors.white},
   image: {
     width: 35,
     height: 35,
@@ -719,6 +732,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.complimentary,
     marginTop: 5,
+    maxWidth: '90%',
   },
   followBtn: {
     backgroundColor: '#ef0143',
