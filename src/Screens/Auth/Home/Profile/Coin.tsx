@@ -34,6 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPurchase } from '../../../../store/slice/accountSlice';
 import { useAppContext } from '../../../../Context/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 // import audioService from '../../../../services/audioService';
 
@@ -100,29 +101,61 @@ export default function Coin({ navigation }: CoinProp) {
     }
   };
 
-  const offlinePurchase = async () => {
-    bottomSheetRef.current?.close();
-    Alert.alert('Offline Transfer', 'Please Transfer offline Amount to Admin');
-    try {
-      setData(prev => ({ ...prev, disabled: true }));
+  const handleOfflinePress = () => {
+    Alert.alert(
+      'Offline Payment',
+      'Bank Name: Faysal Bank\n' +
+      'Account Holder: Ejaz Hussain\n' +
+      'Account Number (IBAN): PK39FAYS311678700007521\n\n' +
+      'Please upload a screenshot of the payment made to this account before proceeding.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Next',
+          onPress: () => {
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.8 },
+              async response => {
+                if (response.didCancel || response.errorCode) {
+                  console.log('Image selection cancelled or failed');
+                  return;
+                }
 
-      const url = 'package/purchase';
-      let data = {
-        packageId: purchase.id,
-        type: 'offline',
-      };
-      const res = await axiosInstance.post(url, data);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Request Sent 👋',
-      });
-      console.log('Res2: ', res.data);
-    } catch (error) {
-      console.log('Error2: ', error);
-    } finally {
-      setData(prev => ({ ...prev, disabled: false }));
-    }
+                const asset = response.assets?.[0];
+                if (!asset) { return; }
+
+                const formData = new FormData();
+                formData.append('image', {
+                  uri: Platform.OS === 'android' ? asset.uri : asset.uri?.replace('file://', ''),
+                  name: asset.fileName || 'upload.jpg',
+                  type: asset.type || 'image/jpeg',
+                });
+                formData.append('packageId', purchase.id);
+                formData.append('type', 'offline');
+
+                try {
+                  setData(prev => ({ ...prev, disabled: true }));
+                  const res = await axiosInstance.post('package/purchase', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                  });
+
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Success',
+                    text2: 'Request Sent 👋',
+                  });
+                  console.log('Res2: ', res.data);
+                } catch (error) {
+                  console.log('Error2: ', error);
+                } finally {
+                  setData(prev => ({ ...prev, disabled: false }));
+                }
+              }
+            );
+          },
+        },
+      ]
+    );
   };
 
   const displayType = (type: any) => {
@@ -212,12 +245,12 @@ export default function Coin({ navigation }: CoinProp) {
               <Text
                 style={[
                   styles.tabText,
-                  data.type == 'diamonds' && { color: '#fff' },
+                  data.type === 'diamonds' && { color: '#fff' },
                 ]}>
                 Diamonds 💎
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => displayType('beans')}
               style={[
                 styles.tab,
@@ -231,10 +264,10 @@ export default function Coin({ navigation }: CoinProp) {
                 Beans
               </Text>
               <Icon name="chevron-right" color="#fff" size={25} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
-          {data.type == 'diamonds' ? (
+          {data.type === 'diamonds' ? (
             <Diamond
               navigation={navigation}
               data={data}
@@ -289,7 +322,7 @@ export default function Coin({ navigation }: CoinProp) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.sheetBtn}
-                onPress={offlinePurchase}>
+                onPress={handleOfflinePress}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Cat height={33} width={33} />
                   <Text
