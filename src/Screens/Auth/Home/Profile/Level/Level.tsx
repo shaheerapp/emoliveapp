@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Image,
   FlatList,
+  StatusBar,
 } from 'react-native';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../../../../../styles/colors';
@@ -183,6 +184,7 @@ export default function Level({navigation}) {
 
   return (
     <ImageBackground source={IMAGES.bglevel} style={styles.container}>
+      <StatusBar barStyle={"dark-content"} />
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <IconM name="chevron-left" size={25} color={colors.complimentary} />

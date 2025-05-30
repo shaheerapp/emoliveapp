@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, {useState, useEffect, useMemo} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import Landing from '../Screens/Guest/Landing';
 import Phone from '../Screens/Guest/Phone';
 import SplashScreen from '../Screens/Guest/SplashScreen';
@@ -32,33 +32,34 @@ import Privacy from '../Screens/Auth/Home/Profile/Settings/Privacy';
 import Level from '../Screens/Auth/Home/Profile/Level/Level';
 import LiveBattle from '../Screens/Auth/Home/PK/LiveBattle';
 import LiveStreaming from '../Screens/Auth/Home/Tabs/Streaming/LiveStreaming';
-import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import NetInfo, {NetInfoState} from '@react-native-community/netinfo';
 import GoLive2 from '../Screens/Auth/Home/Chat/GoLive2';
 import Inbox from '../Screens/Auth/Home/Chat/Inbox';
 // import Notifications from '../Screens/Auth/Home/Notifications';
 // import Chat2 from ""
-import { useAppContext } from '../Context/AppContext';
+import {useAppContext} from '../Context/AppContext';
 import Chat2 from './Test/Chat2';
 // import Edit
 import EditProfile from '../Screens/Auth/Home/Profile/EditProfile';
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { isSearchBarAvailableForCurrentPlatform } from 'react-native-screens';
-import { colors } from '../styles/colors';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {isSearchBarAvailableForCurrentPlatform} from 'react-native-screens';
+import {colors} from '../styles/colors';
 import WebViewGame from '../Screens/Auth/Games/WebViewGame';
+import FanAndFollowerScreen from '../Screens/Auth/Home/FanAndFollowerScreen';
 // const Navigation = createStaticNavigation(RootStack);
 const Stack = createNativeStackNavigator();
 
 export default function Index() {
-  const { userAuthInfo, netConnection, loader } = useAppContext();
-  const { user } = userAuthInfo;
-  const { connection } = netConnection;
+  const {userAuthInfo, netConnection, loader} = useAppContext();
+  const {user} = userAuthInfo;
+  const {connection} = netConnection;
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
         {connection ? (
-          <Stack.Group screenOptions={{ headerShown: false }}>
+          <Stack.Group screenOptions={{headerShown: false}}>
             {loader ? (
               <>
                 <Stack.Screen name="SplashScreen" component={SplashScreen} />
@@ -120,7 +121,6 @@ export default function Index() {
                     <Stack.Screen name="PlayCenter" component={PlayCenter} />
                     <Stack.Screen name="WebViewGame" component={WebViewGame} />
 
-
                     <Stack.Screen name="Chat2" component={Chat2} />
                     <Stack.Screen
                       name="StrangerMessages"
@@ -148,6 +148,10 @@ export default function Index() {
                     <Stack.Screen
                       name="BlockedUsers"
                       component={BlockedUsers}
+                    />
+                    <Stack.Screen
+                      name="FanAndFollower"
+                      component={FanAndFollowerScreen}
                     />
                   </>
                 )}
