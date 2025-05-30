@@ -5,7 +5,6 @@ const uuidv4 = require('uuid').v4;
 const cors = require('cors');
 const axios = require('axios');
 
-
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -13,8 +12,8 @@ app.use(cors());
 const port = 3000;
 
 // ✅ FIX: Maps declared at top to persist globally
-const myCodeMap = new Map();           // code -> user_id
-const mySstokenMap = new Map();        // sstoken -> { user_id, expire }
+const myCodeMap = new Map(); // code -> user_id
+const mySstokenMap = new Map(); // sstoken -> { user_id, expire }
 const userBalanceMap = new Map();
 const APP_KEY = 'N9DsdEeL5ogmlBwBUAVoN8is61Zco5cv';
 
@@ -29,7 +28,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/get_code', (req, res) => {
-  const { user_id } = req.query;
+  const {user_id} = req.query;
 
   // Validate required param
   if (!user_id) {
@@ -51,7 +50,6 @@ app.get('/get_code', (req, res) => {
     temp_code: code,
   });
 });
-
 
 // ✅ Get SS Token
 app.post('/get-sstoken', (req, res) => {
@@ -86,7 +84,10 @@ app.post('/get-sstoken', (req, res) => {
       const expire_date = Date.now() + 1000 * 60 * 60 * 24;
 
       // ✅ Save to map
-      mySstokenMap.set(ss_token, { user_id: jsonData.user_id, expire: expire_date });
+      mySstokenMap.set(ss_token, {
+        user_id: jsonData.user_id,
+        expire: expire_date,
+      });
 
       return res.status(200).json({
         code: 0,
@@ -110,7 +111,6 @@ app.post('/get-sstoken', (req, res) => {
     data: {},
   });
 });
-
 
 app.post('/get-user-info', async (req, res) => {
   const jsonData = req.body;
@@ -149,7 +149,9 @@ app.post('/get-user-info', async (req, res) => {
   }
 
   try {
-    const userResponse = await axios.get(`${API_BASE_URL}/public-user-info/${tokenInfo.user_id}`);
+    const userResponse = await axios.get(
+      `${API_BASE_URL}/public-user-info/${tokenInfo.user_id}`,
+    );
 
     const user = userResponse.data.user;
 
@@ -175,7 +177,6 @@ app.post('/get-user-info', async (req, res) => {
   }
 });
 
-
 app.post('/change-balance', (req, res) => {
   const jsonData = req.body;
   const uid = uuidv1();
@@ -188,7 +189,9 @@ app.post('/change-balance', (req, res) => {
   if (sign !== jsonData.signature) {
     resCode = 1003;
     msg = 'sign error';
-    return res.status(400).json({ code: resCode, message: msg, unique_id: uid, data: {} });
+    return res
+      .status(400)
+      .json({code: resCode, message: msg, unique_id: uid, data: {}});
   }
 
   const tokenData = mySstokenMap.get(jsonData.ss_token);
@@ -196,7 +199,9 @@ app.post('/change-balance', (req, res) => {
     resCode = 1001;
     msg = 'ss_token not found or expired';
     mySstokenMap.delete(jsonData.ss_token);
-    return res.status(400).json({ code: resCode, message: msg, unique_id: uid, data: {} });
+    return res
+      .status(400)
+      .json({code: resCode, message: msg, unique_id: uid, data: {}});
   }
 
   const userId = jsonData.user_id;
@@ -209,7 +214,14 @@ app.post('/change-balance', (req, res) => {
   // Prevent duplicate settlement if order already exists
   const orderKey = `order_${jsonData.order_id}`;
   if (userBalanceMap.has(orderKey)) {
-    return res.status(200).json({ code: 0, message: 'already settled', unique_id: uid, data: { currency_balance: userBalanceMap.get(userId) } });
+    return res
+      .status(200)
+      .json({
+        code: 0,
+        message: 'already settled',
+        unique_id: uid,
+        data: {currency_balance: userBalanceMap.get(userId)},
+      });
   }
 
   // Update balance
@@ -226,7 +238,6 @@ app.post('/change-balance', (req, res) => {
     },
   });
 });
-
 
 app.post('/update-sstoken', (req, res) => {
   const jsonData = req.body;
@@ -313,7 +324,6 @@ app.post('/update-sstoken', (req, res) => {
   }
 });
 
-
 app.post('/report-game-status', (req, res) => {
   const jsonData = req.body;
   const uid = uuidv1();
@@ -326,10 +336,14 @@ app.post('/report-game-status', (req, res) => {
   if (sign !== jsonData.signature) {
     resCode = 1003;
     msg = 'sign error';
-    return res.status(400).json({ code: resCode, message: msg, unique_id: uid, data: {} });
+    return res
+      .status(400)
+      .json({code: resCode, message: msg, unique_id: uid, data: {}});
   }
 
-  return res.status(200).json({ code: resCode, message: msg, unique_id: uid, data: {} });
+  return res
+    .status(200)
+    .json({code: resCode, message: msg, unique_id: uid, data: {}});
 });
 
 app.listen(process.env.PORT || port, () => {

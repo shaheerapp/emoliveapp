@@ -28,9 +28,9 @@ import {
   ChatMessageChatType,
 } from 'react-native-agora-chat';
 
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import { IMAGES } from '../../../../../assets/images';
+import {IMAGES} from '../../../../../assets/images';
 interface BottomSectionProps {
   handleOpenSheet: any;
   roomId: string;
@@ -139,7 +139,6 @@ const BottomSection = ({
               paddingHorizontal: 10,
             },
       ]}>
-       
       <View
         style={[
           styles.sheetMessage,
@@ -206,23 +205,27 @@ const BottomSection = ({
       <View
         style={[
           styles.btn1,
-          single
-            ? {
-                marginTop: 10,
-                // bottom: Platform.OS == 'ios' ? 10 : 40,
-              }
-            : {
-                position: 'absolute',
-                bottom: Platform.OS == 'ios' ? 30 : 10,
-              },
+          {
+            position: 'absolute',
+            bottom: Platform.OS == 'ios' ? 30 : 10,
+          },
         ]}>
         {/* <View style={[styles.btn1, single && {bottom: 30}]}> */}
         <TextInput
           style={[
-            styles.inputBox,
             single && {
               backgroundColor: 'rgba(255,255,255,0.1)',
               borderColor: colors.complimentary,
+            },
+            {
+              padding: 10,
+              // backgroundColor: '#11132c',
+              color: colors.complimentary,
+              borderWidth: 1,
+              borderColor: colors.complimentary,
+              width: '33%',
+              borderRadius: 5,
+              alignSelf: 'flex-start',
             },
           ]}
           autoCapitalize="none"
@@ -231,35 +234,72 @@ const BottomSection = ({
           onChangeText={setMessage}
           value={message}
           placeholder="Say hello ...."
-          placeholderTextColor={single ? colors.complimentary : 'grey'}
+          placeholderTextColor={
+            single ? colors.complimentary : colors.complimentary
+          }
         />
+        <TouchableOpacity
+          style={styles.iconCircle}
+          onPress={sendChatRoomMessage}>
+          <Image
+            source={IMAGES.phone}
+            tintColor={'white'}
+            style={{width: 18, height: 18}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.iconCircle}
+          onPress={() => {
+            console.log(chatRoomMessages);
+          }}>
+          <Image
+            source={IMAGES.laugh}
+            tintColor={'white'}
+            style={{width: 18, height: 18}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.iconCircle}
+          onPress={() => console.log('mic Presssed')}>
+          <Image
+            source={IMAGES.mick}
+            tintColor={'white'}
+            style={{width: 18, height: 18}}
+          />
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={sendChatRoomMessage}>
+          <Icon name="send" color={colors.complimentary} size={24} />
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity onPress={() => handleOpenSheet('tools')}>
+          <Icon name="dots-horizontal" color={colors.complimentary} size={24} />
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity
+          onPress={() => {
+            console.log(chatRoomMessages);
+          }}>
+          <Icon name="emoticon" color={colors.yellow} size={24} />
+        </TouchableOpacity> */}
+        <TouchableOpacity
+          style={styles.iconCircle}
+          onPress={() => handleOpenSheet('gifts')}>
+          <Image
+            source={require('../../../../../assets/images/bag.png')}
+            style={{height: 20, width: 20}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.iconCircle}
+          onPress={() => handleOpenSheet('tools')}>
+          <Image
+            source={IMAGES.dots}
+            tintColor={'white'}
+            style={{width: 18, height: 18}}
+          />
+        </TouchableOpacity>
+        {/* <View style={styles.action}>
+         
 
-        <View style={styles.action}>
-          {/* <TouchableOpacity> */}
-          <TouchableOpacity onPress={sendChatRoomMessage}>
-            <Icon name="send" color={colors.complimentary} size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenSheet('tools')}>
-            <Icon
-              name="dots-horizontal"
-              color={colors.complimentary}
-              size={24}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              console.log(chatRoomMessages);
-            }}>
-            <Icon name="emoticon" color={colors.yellow} size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenSheet('gifts')}>
-            <Image
-              source={require('../../../../../assets/images/bag.png')}
-              style={{height: 30, width: 30}}
-            />
-          </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </View>
   );

@@ -91,13 +91,19 @@ const liveStyles = StyleSheet.create({
     // position: 'absolute',
     flexDirection: 'row',
     alignSelf: 'center',
-    // bottom: 10,
-    // bottom: Platform.OS == 'ios' ? 30 : 10,
     borderRadius: 15,
     justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '95%',
   },
   usersList: {
     marginTop: 20,
+  },
+  iconCircle: {
+    borderWidth: 1,
+    borderColor: colors.complimentary,
+    borderRadius: 50,
+    padding: 9,
   },
   emptySeat: {
     width: 40,
@@ -116,7 +122,7 @@ const liveStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    
+
     // backgroundColor: 'red',
   },
   heading: {

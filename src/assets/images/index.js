@@ -1,4 +1,3 @@
-
 export const IMAGES = {
   msg: require('./msg.png'),
   agency: require('./agency.png'),
@@ -33,6 +32,10 @@ export const IMAGES = {
   RectangleWithLine: require('./RectangleWithLine.png'),
   stars: require('./stars.png'),
   music: require('./music.png'),
- 
- 
+  mick: require('./mick.png'),
+  dots: require('./dots.png'),
+  laugh: require('./laugh.png'),
+  phone: require('./phone.png'),
+  swap: require('./swap.png'),
+  search: require('./search.png'),
 };

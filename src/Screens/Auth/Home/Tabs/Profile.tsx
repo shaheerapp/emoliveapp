@@ -312,30 +312,48 @@ export default function Search({navigation}) {
                 source={IMAGES.topGradient}
                 resizeMode="contain"
                 style={styles.gradient}>
-                <View style={styles.gradientView}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('FanAndFollower', {
+                      name: 'Fans', // or any other ID
+                    });
+                  }}
+                  style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     14
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Fans
                   </Text>
-                </View>
-                <View style={styles.gradientView}>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('FanAndFollower', {
+                      name: 'Following', // or any other ID
+                    });
+                  }}
+                  style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     40
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Following
                   </Text>
-                </View>
-                <View style={styles.gradientView}>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('FanAndFollower', {
+                      name: 'Friends', // or any other ID
+                    });
+                  }}
+                  style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     44
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Friends
                   </Text>
-                </View>
+                </TouchableOpacity>
               </ImageBackground>
               <ImageBackground
                 source={IMAGES.bottomGradient}
