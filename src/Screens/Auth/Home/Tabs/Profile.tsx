@@ -38,7 +38,7 @@ export default function Search({navigation}) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getUnreadMessages();
+    // getUnreadMessages();
 
     // Fetch podcasts immediately
     refreshUser();
@@ -123,12 +123,13 @@ export default function Search({navigation}) {
   const getUnreadMessages = async () => {
     try {
       const count = await chatClient.chatManager.getUnreadCount();
-      setUnreadMessageCount(count);
-      // console.log(count);
+      setUnreadMessageCount(count ?? 0);
     } catch (error) {
-      console.log(error);
+      console.error('getUnreadMessages failed:', error);
+      Alert.alert('Error', 'Failed to fetch unread messages.');
     }
   };
+
   const refreshUser = async () => {
     try {
       // setLoading(true);

@@ -44,7 +44,6 @@ export default function Search({ navigation }: SearchScreenProps) {
   const [searchUsers, setSearchUsers] = useState([]);
 
   useEffect(() => {
-    // getUsers();
     dispatch(getUsers());
   }, []);
 
