@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  ScrollView,
   Image,
   LayoutAnimation,
   Platform,
@@ -38,7 +37,7 @@ export default function Search({navigation}) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // getUnreadMessages();
+    getUnreadMessages();
 
     // Fetch podcasts immediately
     refreshUser();
@@ -123,13 +122,12 @@ export default function Search({navigation}) {
   const getUnreadMessages = async () => {
     try {
       const count = await chatClient.chatManager.getUnreadCount();
-      setUnreadMessageCount(count ?? 0);
+      setUnreadMessageCount(count);
+      // console.log(count);
     } catch (error) {
-      console.error('getUnreadMessages failed:', error);
-      Alert.alert('Error', 'Failed to fetch unread messages.');
+      console.log(error);
     }
   };
-
   const refreshUser = async () => {
     try {
       // setLoading(true);
