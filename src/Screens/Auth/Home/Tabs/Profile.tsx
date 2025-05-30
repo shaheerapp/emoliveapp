@@ -161,6 +161,7 @@ export default function Search({navigation}) {
       </Text>
     </TouchableOpacity>
   );
+  console.log('===============', user);
 
   return (
     <ImageBackground
@@ -318,7 +319,7 @@ export default function Search({navigation}) {
                   }}
                   style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
-                    14
+                    {user?.followers}
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Fans
@@ -332,7 +333,7 @@ export default function Search({navigation}) {
                   }}
                   style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
-                    40
+                    {user?.following}
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Following
@@ -346,7 +347,7 @@ export default function Search({navigation}) {
                   }}
                   style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
-                    44
+                    {user?.friends}
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Friends
@@ -359,7 +360,7 @@ export default function Search({navigation}) {
                 style={[styles.gradient, styles.bottomgradient]}>
                 <View style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
-                    40
+                    {user?.wallet?.diamonds}
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Diamonds
@@ -367,7 +368,7 @@ export default function Search({navigation}) {
                 </View>
                 <View style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
-                    44
+                    {user?.wallet?.beans}
                   </Text>
                   <Text style={[appStyles.headline2, styles.topgradientItem]}>
                     Beans
