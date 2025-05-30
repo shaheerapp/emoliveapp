@@ -312,7 +312,11 @@ export default function Search({navigation}) {
                 resizeMode="contain"
                 style={styles.gradient}>
                 <TouchableOpacity
-                 
+                  onPress={() => {
+                    navigation.navigate('FanAndFollower', {
+                      name: 'Fans', // or any other ID
+                    });
+                  }}
                   style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     14
@@ -321,11 +325,13 @@ export default function Search({navigation}) {
                     Fans
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={() => {
+                <TouchableOpacity
+                  onPress={() => {
                     navigation.navigate('FanAndFollower', {
                       name: 'Following', // or any other ID
                     });
-                  }} style={styles.gradientView}>
+                  }}
+                  style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     40
                   </Text>
@@ -333,7 +339,13 @@ export default function Search({navigation}) {
                     Following
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.gradientView}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('FanAndFollower', {
+                      name: 'Friends', // or any other ID
+                    });
+                  }}
+                  style={styles.gradientView}>
                   <Text style={[appStyles.paragraph1, styles.topgradientItem]}>
                     44
                   </Text>

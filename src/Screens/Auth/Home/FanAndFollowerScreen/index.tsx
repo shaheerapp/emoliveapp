@@ -13,14 +13,14 @@ import {
 import axios from 'axios';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../../../../styles/colors';
-import {appStyles} from '../Tabs/Podcast/podcastImport';
+import {appStyles, envVar} from '../Tabs/Podcast/podcastImport';
 import {useAppContext} from '../../../../Context/AppContext';
 import {IMAGES} from '../../../../assets/images';
 
 const deviceHeight = Dimensions.get('window').height;
 
 export default function FanAndFollowerScreen({navigation, route}: any) {
-  const {userAuthInfo} = useAppContext();
+  const {userAuthInfo, tokenMemo} = useAppContext();
   const {user} = userAuthInfo;
   const screenName = route?.params?.name;
 
@@ -28,7 +28,7 @@ export default function FanAndFollowerScreen({navigation, route}: any) {
   const [filteredFollowers, setFilteredFollowers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
+  const {token} = tokenMemo;
   const fallbackData = [
     {
       id: 21,
@@ -54,14 +54,32 @@ export default function FanAndFollowerScreen({navigation, route}: any) {
 
   const fetchFollowers = async (userId: number) => {
     try {
-      const response = await axios.get(
-        `https://www.emolivestreaming.online/api/user-followers/${userId}`,
-      );
-      const result = response.data?.data?.following || [];
+      let response = {};
+      let result = [];
+
+      if (screenName === 'Fans') {
+        response = await axios.get(
+          `https://www.emolivestreaming.online/api/user-fans/${user.id}`,
+        );
+        result = response?.data?.fans || [];
+      } else if (screenName === 'Following') {
+        response = await axios.get(
+          `https://www.emolivestreaming.online/api/user-following/${user.id}`,
+        );
+        result = response?.data?.following || [];
+      } else if (screenName === 'Friends') {
+        response = await axios.get(
+          `https://www.emolivestreaming.online/api/user-friends/${user.id}`,
+        );
+        result = response?.data?.following || [];
+      }
+
+      console.log('Fetched followers:', result);
+
       setFollowers(result);
       setFilteredFollowers(result);
     } catch (error) {
-      console.error('Error fetching followers:', error.message);
+      console.error('Error fetching followers:', error?.message);
     } finally {
       setLoading(false);
     }
@@ -81,7 +99,23 @@ export default function FanAndFollowerScreen({navigation, route}: any) {
   const renderItem = ({item}: any) => (
     <View style={styles.itemContainer}>
       <View style={styles.labelWrapper}>
-        <Text numberOfLines={1} style={styles.labelText}>
+        <View
+          style={{borderRadius: 30, width: 35, height: 35, overflow: 'hidden'}}>
+          <Image
+            source={
+              item.avatar
+                ? {
+                    uri: envVar.API_URL + 'display-avatar/' + user.id,
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                : require('../../../../assets/images/place.jpg')
+            }
+            style={{width: '100%', height: '100%', resizeMode: 'cover'}}
+          />
+        </View>
+        <Text style={styles.labelText}>
           {(item.first_name || '') + ' ' + (item.last_name || '') || 'Unnamed'}
         </Text>
       </View>
@@ -193,12 +227,13 @@ const styles = StyleSheet.create({
     width: 25,
   },
   labelWrapper: {
-    maxWidth: deviceHeight * 0.13,
-    gap: 5,
+    maxWidth: deviceHeight * 0.4,
+    gap: 15,
+    flexDirection: 'row',
   },
   labelText: {
-    ...appStyles.headline2,
+    ...appStyles.regularTxtMd,
     color: 'black',
-    textAlign: 'left',
+    textAlign: 'left',top:8
   },
 });
