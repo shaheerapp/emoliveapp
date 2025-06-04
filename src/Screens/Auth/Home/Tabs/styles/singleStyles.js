@@ -5,7 +5,6 @@ const deviceHeight = Dimensions.get('window').height;
 export const singleStyles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'relative',
   },
   guest: {
     width: '40%',

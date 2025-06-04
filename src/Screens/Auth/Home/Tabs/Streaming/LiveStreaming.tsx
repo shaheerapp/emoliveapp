@@ -72,6 +72,9 @@ import Users from '../Podcast/Users';
 import Tools from '../Podcast/Tools';
 import {setIsJoined} from '../../../../../store/slice/usersSlice';
 import axiosInstance from '../../../../../Api/axiosConfig';
+import {IMAGES} from '../../../../../assets/images';
+import {jsiConfigureProps} from 'react-native-reanimated/lib/typescript/core';
+import {JumpingTransition} from 'react-native-reanimated';
 const MAX_RETRIES = 5;
 const deviceHeight = Dimensions.get('window').height;
 
@@ -529,20 +532,24 @@ export default function LiveStreaming({navigation}) {
   }, []);
   // Render a single host view
   return (
-    <SafeAreaView edges={['top']} style={{flex: 1, backgroundColor: colors.LG}}>
+    <ImageBackground style={[styles.image]} source={IMAGES.streamingbg}>
       <StatusBar
         barStyle="light-content" // Text color: 'dark-content' or 'light-content'
         hidden={false} // Whether the status bar should be hidden or not
       />
-      <View style={styles.container}>
+      <View style={[styles.container, {justifyContent: 'space-between'}]}>
         {single ? (
           <View
             style={{
-              position: 'relative',
               flex: 1,
-              backgroundColor: colors.LG,
+              justifyContent: 'space-between',
             }}>
-            <View style={{position: 'relative'}}>
+            <View
+              style={[
+                {
+                  marginTop: Platform.OS === 'ios' ? 60 : 10,
+                },
+              ]}>
               <Header
                 user={user}
                 navigation={navigation}
@@ -553,7 +560,7 @@ export default function LiveStreaming({navigation}) {
                 connected={connected}
               />
             </View>
-            <View style={{height: deviceHeight * 1, position: 'relative'}}>
+            <View style={{flex: 1}}>
               <SingleLive
                 token={token}
                 user={user}
@@ -573,9 +580,19 @@ export default function LiveStreaming({navigation}) {
             )}
           </View>
         ) : (
-          <ImageBackground
-            style={styles.image}
-            source={require('../../../../../assets/images/LiveBg.png')}>
+          <View
+            style={{
+              flex: 1,
+              marginTop: 60,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              height:
+                streamListeners.length > 6
+                  ? deviceWidth * 0.963
+                  : streamListeners.length > 3
+                  ? deviceWidth * 0.7
+                  : deviceWidth * 0.4,
+            }}>
             <Header
               user={user}
               navigation={navigation}
@@ -585,18 +602,23 @@ export default function LiveStreaming({navigation}) {
               leavePodcast={leaveStream}
               connected={connected}
             />
-            <StreamStatus />
             <View
               style={{
-                height:
-                  streamListeners.length > 6
-                    ? deviceWidth * 0.963
-                    : streamListeners.length > 3
-                    ? deviceWidth * 0.7
-                    : deviceWidth * 0.4,
+                top: 25,
+              }}>
+              <StreamStatus />
+            </View>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                width: '100%',
+                height: '100%',
+                // backgroundColor: 'red',
               }}>
               <FlatList
-                data={streamListeners}
+                data={streamListeners || []}
                 contentContainerStyle={{paddingBottom: 40}}
                 renderItem={({item}) => (
                   <View style={styles.hostView}>
@@ -699,17 +721,15 @@ export default function LiveStreaming({navigation}) {
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={3}
               />
+              {!sheet && (
+                <BottomSection
+                  single={single}
+                  roomId={stream.chat_room_id}
+                  handleOpenSheet={handleOpenSheet}
+                />
+              )}
             </View>
-            {/* <KeyboardAvoidingView> */}
-            {!sheet && (
-              <BottomSection
-                single={single}
-                roomId={stream.chat_room_id}
-                handleOpenSheet={handleOpenSheet}
-              />
-            )}
-            {/* </KeyboardAvoidingView> */}
-          </ImageBackground>
+          </View>
         )}
         <EndLive
           user={user}
@@ -752,7 +772,7 @@ export default function LiveStreaming({navigation}) {
 
         {liveStatus == 'LOADING' && <LiveLoading />}
       </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 }
 

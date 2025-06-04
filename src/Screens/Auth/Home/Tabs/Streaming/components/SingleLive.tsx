@@ -59,7 +59,6 @@ export default function SingleLive({
     <View style={styles.container}>
       <View
         style={{
-          backgroundColor: 'green',
           flex: 1,
         }}>
         {isJoined && host ? (

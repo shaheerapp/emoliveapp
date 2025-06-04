@@ -159,7 +159,7 @@ const BottomSection = ({
           </Text>
         </Text>
       </View>
-      <View style={{position: 'relative'}}>
+      <View style={{}}>
         <Animated.View
           style={[
             {
@@ -177,7 +177,7 @@ const BottomSection = ({
       {/* )} */}
       <View style={[single ? {height: '20%'} : {height: '16%'}]}>
         <FlatList
-          data={chatRoomMessages}
+          data={chatRoomMessages || []}
           contentContainerStyle={{paddingBottom: 10}}
           keyExtractor={item => item.localTime.toString()}
           renderItem={({item}: any) => (

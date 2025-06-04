@@ -517,7 +517,7 @@ export default function GoLive({navigation}: any) {
           style={[
             styles.image,
             {
-              paddingTop: 50,
+              paddingTop: Platform.OS === 'ios' ? 50 : 10,
               justifyContent: 'space-between',
             },
           ]}>
@@ -543,13 +543,15 @@ export default function GoLive({navigation}: any) {
                 source={IMAGES.Rectangle}
                 borderRadius={25}
                 style={{padding: 7, justifyContent: 'center'}}>
-                <Text>💎 12343</Text>
+                <Text style={{color: 'white'}}>
+                  💎 {user?.wallet?.diamonds ? user?.wallet?.diamonds : 0}
+                </Text>
               </ImageBackground>
               <ImageBackground
                 source={IMAGES.Rectangle}
                 borderRadius={25}
                 style={{padding: 7, justifyContent: 'center'}}>
-                <Text>12343</Text>
+                <Text style={{color: 'white'}}>12343</Text>
               </ImageBackground>
               <ImageBackground
                 source={IMAGES.Rectangle}
