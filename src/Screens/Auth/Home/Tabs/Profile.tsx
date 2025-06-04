@@ -265,7 +265,10 @@ export default function Search({navigation}) {
                       tintColor={colors.white}
                     />
                   </View>
-                  <View style={[styles.checkVip]}>
+                  <TouchableOpacity
+                  
+                    onPress={() => navigation.navigate('VIP')}
+                    style={[styles.checkVip]}>
                     <Text
                       style={[
                         styles.levelTxt,
@@ -281,7 +284,7 @@ export default function Search({navigation}) {
                         // tintColor={colors.white}
                       />
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   <Image
                     style={{width: 25, height: 25}}
                     source={IMAGES.mic}
