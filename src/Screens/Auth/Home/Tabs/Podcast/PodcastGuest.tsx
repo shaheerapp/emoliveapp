@@ -1,9 +1,9 @@
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
 import envVar from '../../../../../config/envVar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {colors} from '../../../../../styles/colors';
-import {setSelectedGuest} from '../../../../../store/slice/usersSlice';
+import { colors } from '../../../../../styles/colors';
+import { setSelectedGuest } from '../../../../../store/slice/usersSlice';
 import liveStyles from '../styles/liveStyles';
 import appStyles from '../../../../../styles/styles';
 
@@ -24,6 +24,12 @@ export default function PodcastGuest({
   muteUnmuteUser,
   user,
 }: PodcastGuest) {
+
+  useEffect(() => {
+    console.log('Item: ', item);
+
+  }, []);
+
   return (
     <TouchableOpacity
       style={{
@@ -37,28 +43,28 @@ export default function PodcastGuest({
         source={
           item?.user.avatar
             ? {
-                uri: envVar.API_URL + 'display-avatar/' + item?.user.id,
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
+              uri: envVar.API_URL + 'display-avatar/' + item?.user.id,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
             : require('../../../../../assets/images/place.jpg')
         }
-        style={{width:50,height:50}}
+        style={{ width: 50, height: 50, borderRadius: 50 }}
       />
-      {/* <Text
+      <Text
         style={[
           appStyles.bodyMd,
-          {color: colors.complimentary, textAlign: 'center'},
+          { color: colors.complimentary, textAlign: 'center' },
         ]}>
         {item?.user.first_name + ' ' + item?.user.last_name}
-      </Text> */}
-      {/* <View style={styles.points}>
+      </Text>
+      <View style={styles.points}>
         <Icon name="star-four-points" size={15} color={colors.dominant} />
-        <Text style={[appStyles.small, {color: colors.dominant}]}>3754</Text>
-      </View> */}
+        <Text style={[appStyles.small, { color: colors.dominant }]}>0</Text>
+      </View>
       {item?.user.id == user.id}
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={() => muteUnmuteUser(item)}
         style={{
           position: 'absolute',
@@ -69,7 +75,7 @@ export default function PodcastGuest({
           size={25}
           color={colors.complimentary}
         />
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }

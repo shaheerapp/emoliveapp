@@ -1,21 +1,21 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {Alert} from 'react-native';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { Alert } from 'react-native';
 import axiosInstance from '../../Api/axiosConfig';
 
 export const getUserInfoFromAPI = createAsyncThunk(
   'podcast/getUserInfoFromAPI',
-  async (id, remote, {getState, dispatch}) => {
+  async (id, remote, { getState, dispatch }) => {
     // async (id: number, {getState, dispatch}) => {
     try {
       console.log(id, 'user id from podcast');
-      const {podcastListeners} = getState().podcast;
+      const { podcastListeners } = getState().podcast;
       // Check if user already exists in the list
       const currentUsers = podcastListeners;
 
-      if (currentUsers.some(item => item.user?.id === id)) return;
+      if (currentUsers.some(item => item.user?.id === id)) { return; }
 
       // Fetch user data from API
-      const {data} = await axiosInstance.post('users-info', {users: [id]});
+      const { data } = await axiosInstance.post('users-info', { users: [id] });
 
       if (data.users?.[0]) {
         // Find an empty slot where `occupied` is false and `user` is not assigned
@@ -27,7 +27,7 @@ export const getUserInfoFromAPI = createAsyncThunk(
           // Create a new array with updated user information (immutably)
           const updatedUsers = currentUsers.map((item, index) =>
             index === emptyRoomIndex
-              ? {...item, user: data.users[0], occupied: true}
+              ? { ...item, user: data.users[0], occupied: true }
               : item,
           );
 
@@ -36,7 +36,7 @@ export const getUserInfoFromAPI = createAsyncThunk(
           if (remote) {
             dispatch({
               type: 'users/setGuestUser',
-              payload: {user: data.users?.[0], state: true},
+              payload: { user: data.users?.[0], state: true },
             });
           }
         } else {
@@ -70,7 +70,7 @@ const podcastSlice = createSlice({
       state.podcasts = action.payload;
     },
     updatePodcastListeners: (state, action) => {
-      let hosts = Array.from({length: action.payload}, (_, i) => ({
+      let hosts = Array.from({ length: action.payload }, (_, i) => ({
         id: null,
         seatNo: i + 1,
         user: null,
@@ -97,19 +97,19 @@ const podcastSlice = createSlice({
       console.log('i updated array ....');
       state.podcastListeners = action.payload;
     },
-    updatePodcastRoomId: (state, {payload}) => {
+    updatePodcastRoomId: (state, { payload }) => {
       let podcast = state.payload;
-      podcast = {...podcast, chat_room_id: payload};
+      podcast = { ...podcast, chat_room_id: payload };
       state.podcast = podcast;
     },
     setHostLeftPodcast: (state, action) => {
       state.hostLeftPodcast = action.payload;
     },
-    setUserInState: (state, {payload}) => {
+    setUserInState: (state, { payload }) => {
       let currentUsers = state.podcastListeners;
       // Check if user already exists in the list
       let joined = currentUsers.find(item => item.user?.id == payload.id);
-      if (joined) return;
+      if (joined) { return; }
 
       // Find an empty room (unoccupied slot)
       const emptyRoomIndex = currentUsers.findIndex(item => !item.occupied);
@@ -119,7 +119,7 @@ const podcastSlice = createSlice({
         // Create a new array with the updated user (immutable update)
         const updatedUsers = currentUsers.map((item, index) =>
           index === emptyRoomIndex
-            ? {...item, user: payload, occupied: true}
+            ? { ...item, user: payload, occupied: true }
             : item,
         );
         state.podcastListeners = updatedUsers;
@@ -129,29 +129,79 @@ const podcastSlice = createSlice({
         console.warn('No empty rooms available');
       }
     },
-    setPrevUsersInPodcast: (state, {payload}) => {
-      let currentUsers = state.podcastListeners;
+    setPrevUsersInPodcast: (state, { payload }) => {
+      const seatMap = new Map();
+      const userIdSet = new Set(); // Track unique user IDs
 
-      const existingUserIds = new Set(currentUsers.map(item => item.user?.id));
+      // Map current seat info
+      state.podcastListeners.forEach(seat => {
+        const userId = seat.user?.id;
+        if (seat.seatNo && userId && !userIdSet.has(userId)) {
+          seatMap.set(seat.seatNo, seat);
+          userIdSet.add(userId);
+        }
+      });
 
-      const newUsers = payload
-        .filter(user => !existingUserIds.has(user.id))
-        .map(user => ({
-          user,
-          occupied: true,
-          seatNo: null, // Default value (or set based on logic)
-          muted: false, // Default value (or set based on logic)
-        }));
-      state.podcastListeners = [...currentUsers, ...newUsers];
+      // Add/update from payload
+      payload.forEach(serverSlot => {
+        const user = serverSlot.user || serverSlot;
+        const userId = user?.id;
+
+        if (!userId || userIdSet.has(userId)) { return; }
+
+        // const isHost = userId === state.podcast?.host;
+        // if (isHost) {
+        //   seatMap.set(1, {
+        //     ...serverSlot,
+        //     user,
+        //     seatNo: 1,
+        //     occupied: true,
+        //     muted: serverSlot.muted ?? false,
+        //   });
+        //   userIdSet.add(userId);
+        //   return;
+        // }
+
+        for (let seatNo = 1; seatNo <= 8; seatNo++) {
+          const seat = seatMap.get(seatNo);
+          if (!seat || !seat.occupied) {
+            seatMap.set(seatNo, {
+              ...serverSlot,
+              user,
+              seatNo,
+              occupied: true,
+              muted: serverSlot.muted ?? false,
+            });
+            userIdSet.add(userId);
+            break;
+          }
+        }
+      });
+
+      const updatedListeners = [];
+      for (let i = 1; i <= 8; i++) {
+        updatedListeners.push(
+          seatMap.get(i) || {
+            id: null,
+            seatNo: i,
+            user: null,
+            occupied: false,
+            muted: false,
+          }
+        );
+      }
+
+      state.podcastListeners = updatedListeners;
     },
-    updatedMuteUnmuteUser: (state, {payload}) => {
+
+    updatedMuteUnmuteUser: (state, { payload }) => {
       state.streamListeners = state.streamListeners.map(listener =>
         listener.user?.id === payload
-          ? {...listener, muted: !listener.muted} // Create a new object with updated muted property
+          ? { ...listener, muted: !listener.muted } // Create a new object with updated muted property
           : listener,
       );
     },
-    removeUserFromPodcast: (state, {payload}) => {
+    removeUserFromPodcast: (state, { payload }) => {
       let currentUsers = state.podcastListeners;
       console.log('Copy run key ... filtering out user', currentUsers);
 

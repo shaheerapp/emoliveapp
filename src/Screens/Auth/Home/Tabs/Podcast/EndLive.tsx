@@ -6,17 +6,17 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
-import {colors} from '../../../../../styles/colors';
+import React, { useState } from 'react';
+import { colors } from '../../../../../styles/colors';
 import appStyles from '../../../../../styles/styles';
-import {ChatClient} from 'react-native-agora-chat';
-import {useSelector, useDispatch} from 'react-redux';
+import { ChatClient } from 'react-native-agora-chat';
+import { useSelector, useDispatch } from 'react-redux';
 // import setModalInfo from '../../'
 import {
   setHostLeftPodcast,
   setLeaveModal,
 } from '../../../../../store/slice/podCastSlice';
-import {setLiveStatus} from '../../../../../store/slice/usersSlice';
+import { setLiveStatus } from '../../../../../store/slice/usersSlice';
 
 import axios from 'axios';
 import envVar from '../../../../../config/envVar';
@@ -42,10 +42,10 @@ export default function EndLive({
 }: EndLiveProps) {
   const dispatch = useDispatch();
   const [disabled, setDisabled] = useState(false);
-  const {leaveModal, hostLeftPodcast, podcast} = useSelector(
+  const { leaveModal, hostLeftPodcast, podcast } = useSelector(
     (state: any) => state.podcast,
   );
-  const {stream} = useSelector((state: any) => state.streaming);
+  const { stream } = useSelector((state: any) => state.streaming);
 
   const endPodcast = async () => {
     try {
@@ -59,12 +59,15 @@ export default function EndLive({
         }
       } else {
         url = (live ? 'stream/' : 'podcast/') + url;
-        if (user.id !== podcast.host || user.id !== stream.host) {
-          url = url + '/guest';
+        if (live && user.id !== stream.host) {
+          url += '/guest';
+        } else if (!live && user.id !== podcast.host) {
+          url += '/guest';
         }
       }
 
       // console.log(url);
+      // console.log('IDS: ', user.id, podcast.host);
       await axiosInstance.get(url);
     } catch (error) {
       console.log(error);
@@ -117,7 +120,8 @@ export default function EndLive({
     podcastId: number;
     userId: number;
   }
-  const getText = ({live, podcastId, userId}: BodyText) => {
+  const getText = ({ live, podcastId, userId }: BodyText) => {
+    console.log('user ids: ', userId, podcastId);
     if (PK) {
       return 'Are you sure to left this Battle.';
     }
@@ -150,14 +154,14 @@ export default function EndLive({
             />
           ) : (
             <View style={styles.modalView}>
-              <Text style={[appStyles.title1, {color: colors.complimentary}]}>
+              <Text style={[appStyles.title1, { color: colors.complimentary }]}>
                 {title()} End
                 {/* {live ? 'Live Streaming' : 'Podcast'} End */}
               </Text>
-              <View style={{marginVertical: 20}}>
+              <View style={{ marginVertical: 20 }}>
                 <Text
-                  style={[appStyles.regularTxtMd, {color: colors.body_text}]}>
-                  {getText({live, podcastId: podcast.id, userId: user.id})}
+                  style={[appStyles.regularTxtMd, { color: colors.body_text }]}>
+                  {getText({ live, podcastId: podcast.host, userId: user.id })}
                 </Text>
               </View>
 
@@ -166,16 +170,16 @@ export default function EndLive({
                 onPress={endPodcast}
                 style={[styles.deleteButton]}>
                 <Text style={styles.deleteText}>
-                  {hostLeftPodcast ? 'Ok' : 'Confirm'}
+                  {hostLeftPodcast || user.id === podcast.host ? 'Ok' : 'Confirm'}
                 </Text>
               </TouchableOpacity>
-              {!hostLeftPodcast && (
+              {!hostLeftPodcast || user.id !== podcast.host && (
                 <TouchableOpacity
                   disabled={disabled}
                   onPress={cancelLeave}
                   style={styles.cancelButton}>
                   <Text
-                    style={[appStyles.paragraph1, {color: colors.unknown2}]}>
+                    style={[appStyles.paragraph1, { color: colors.unknown2 }]}>
                     Cancel
                   </Text>
                 </TouchableOpacity>

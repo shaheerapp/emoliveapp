@@ -1,11 +1,11 @@
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import appStyles from '../../../../../styles/styles';
 import React from 'react';
-import {colors} from '../../../../../styles/colors';
+import { colors } from '../../../../../styles/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconM from 'react-native-vector-icons/MaterialIcons';
 
-export default function Tools() {
+export default function Tools({ onGamesPress }) {
   return (
     <View>
       <Text
@@ -19,7 +19,7 @@ export default function Tools() {
         ]}>
         Tools
       </Text>
-      <View style={{borderTopColor: '#fff', borderTopWidth: 1}}>
+      <View style={{ borderTopColor: '#fff', borderTopWidth: 1 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -44,7 +44,10 @@ export default function Tools() {
             </Text>
           </View>
           <View>
-            <TouchableOpacity style={styles.toolBtn}>
+            <TouchableOpacity
+              style={styles.toolBtn}
+              onPress={onGamesPress}
+            >
               <Icon
                 name="share-variant"
                 size={32}
@@ -185,7 +188,7 @@ export default function Tools() {
             </Text>
           </View>
         </View>
-        <View style={{flexDirection: 'row', marginLeft: 10}}>
+        <View style={{ flexDirection: 'row', marginLeft: 10 }}>
           <View>
             <TouchableOpacity style={styles.toolBtn}>
               <IconM
@@ -207,7 +210,7 @@ export default function Tools() {
             </Text>
           </View>
           <View>
-            <TouchableOpacity style={[styles.toolBtn, {marginLeft: 18}]}>
+            <TouchableOpacity style={[styles.toolBtn, { marginLeft: 18 }]}>
               <Icon name="send" size={32} color={colors.complimentary} />
             </TouchableOpacity>
             <Text

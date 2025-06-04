@@ -14,7 +14,6 @@ const store = configureStore({
     account: accountReducer,
     chat: chatReducer,
     notification: notificationReducer,
-    // podcast: podcastReducer,
     podcast: podcastReducer,
     streaming: streamingReducer,
     battle: battleReducer,

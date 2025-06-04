@@ -1,21 +1,21 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {Alert} from 'react-native';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { Alert } from 'react-native';
 import axiosInstance from '../../Api/axiosConfig';
 
 export const getUserInfoFromAPI = createAsyncThunk(
   'streaming/getUserInfoFromAPI',
-  async (id, remote = false, {getState, dispatch}) => {
+  async (id, remote = false, { getState, dispatch }) => {
     // async (id: number, {getState, dispatch}) => {
     try {
       console.log(id, 'user id from stream');
-      const {streamListeners} = getState().streaming;
+      const { streamListeners } = getState().streaming;
       // Check if user already exists in the list
       const currentUsers = streamListeners;
 
-      if (currentUsers.some(item => item.user?.id === id)) return;
+      if (currentUsers.some(item => item.user?.id === id)) { return; }
 
       // Fetch user data from API
-      const {data} = await axiosInstance.post('users-info', {users: [id]});
+      const { data } = await axiosInstance.post('users-info', { users: [id] });
 
       if (data.users?.[0]) {
         // Find an empty slot where `occupied` is false and `user` is not assigned
@@ -27,7 +27,7 @@ export const getUserInfoFromAPI = createAsyncThunk(
           // Create a new array with updated user information (immutably)
           const updatedUsers = currentUsers.map((item, index) =>
             index === emptyRoomIndex
-              ? {...item, user: data.users[0], occupied: true}
+              ? { ...item, user: data.users[0], occupied: true }
               : item,
           );
 
@@ -36,7 +36,7 @@ export const getUserInfoFromAPI = createAsyncThunk(
           if (remote) {
             dispatch({
               type: 'users/setGuestUser',
-              payload: {user: data.users?.[0], state: true},
+              payload: { user: data.users?.[0], state: true },
             });
           }
         } else {
@@ -51,23 +51,23 @@ export const getUserInfoFromAPI = createAsyncThunk(
 );
 export const getUserInfoFromAPIS = createAsyncThunk(
   'streaming/getUserInfoFromAPIS',
-  async (id, remote = false, {getState, dispatch}) => {
+  async (id, remote = false, { getState, dispatch }) => {
     // async (id: number, {getState, dispatch}) => {
     try {
-      const {streamListenersS} = getState().streaming;
+      const { streamListenersS } = getState().streaming;
       // Check if user already exists in the list
       const currentUsers = streamListenersS;
 
-      if (currentUsers.some(item => item.user?.id === id)) return;
+      if (currentUsers.some(item => item.user?.id === id)) { return; }
 
       // Fetch user data from API
-      const {data} = await axiosInstance.post('users-info', {users: [id]});
+      const { data } = await axiosInstance.post('users-info', { users: [id] });
       if (data.users?.[0]) {
         dispatch(addStreamListenerS(data.users?.[0]));
         if (remote) {
           dispatch({
             type: 'users/setGuestUser',
-            payload: {user: data.users?.[0], state: true},
+            payload: { user: data.users?.[0], state: true },
           });
         }
       }
@@ -94,11 +94,11 @@ const streamingSlice = createSlice({
     setGuests: (state, action) => {
       state.guests = action.payload;
     },
-    setSingle: (state, {payload}) => {
+    setSingle: (state, { payload }) => {
       state.single = payload;
     },
-    updateStreamListeners: (state, {payload}) => {
-      let hosts = Array.from({length: payload}, (_, i) => ({
+    updateStreamListeners: (state, { payload }) => {
+      let hosts = Array.from({ length: payload }, (_, i) => ({
         id: null,
         seatNo: i + 1,
         user: null,
@@ -108,10 +108,10 @@ const streamingSlice = createSlice({
       }));
       state.streamListeners = hosts;
     },
-    resetSingleStreamListeners: (state, {payload}) => {
+    resetSingleStreamListeners: (state, { payload }) => {
       state.streamListenersS = payload;
     },
-    addStreamListenerS: (state, {payload}) => {
+    addStreamListenerS: (state, { payload }) => {
       // Get the last seat number from the current state
       const lastSeat =
         state.streamListenersS[state.streamListenersS.length - 1]?.seatNo || 0;
@@ -127,7 +127,7 @@ const streamingSlice = createSlice({
       // Append the new host object to the existing state
       state.streamListenersS = [...state.streamListenersS, newHost];
     },
-    removeUserFromSingleStream: (state, {payload}) => {
+    removeUserFromSingleStream: (state, { payload }) => {
       state.streamListenersS = state.streamListenersS.filter(
         item => item.user?.id !== payload,
       );
@@ -139,20 +139,20 @@ const streamingSlice = createSlice({
     setStreams: (state, action) => {
       state.streams = action.payload;
     },
-    updateStreamRoomId: (state, {payload}) => {
+    updateStreamRoomId: (state, { payload }) => {
       // state.stream.roomId
       let stream = state.stream;
-      stream = {...stream, chat_room_id: payload};
+      stream = { ...stream, chat_room_id: payload };
       state.streams = stream;
     },
     setStreamListeners: (state, action) => {
       state.streamListeners = action.payload;
     },
-    setUserInState: (state, {payload}) => {
+    setUserInState: (state, { payload }) => {
       let currentUsers = state.streamListeners;
       // Check if user already exists in the list
       let joined = currentUsers.find(item => item.user?.id == payload.id);
-      if (joined) return;
+      if (joined) { return; }
 
       // Find an empty room (unoccupied slot)
       const emptyRoomIndex = currentUsers.findIndex(item => !item.occupied);
@@ -162,7 +162,7 @@ const streamingSlice = createSlice({
         // Create a new array with the updated user (immutable update)
         const updatedUsers = currentUsers.map((item, index) =>
           index === emptyRoomIndex
-            ? {...item, user: payload, occupied: true}
+            ? { ...item, user: payload, occupied: true }
             : item,
         );
         state.streamListeners = updatedUsers;
@@ -170,7 +170,7 @@ const streamingSlice = createSlice({
         console.warn('No empty rooms available');
       }
     },
-    setPrevUsersInStream: (state, {payload}) => {
+    setPrevUsersInStream: (state, { payload }) => {
       let currentUsers = state.streamListeners;
       const existingUserIds = new Set(currentUsers.map(item => item.user?.id));
 
@@ -185,8 +185,8 @@ const streamingSlice = createSlice({
         }));
       state.streamListeners = [...currentUsers, ...newUsers];
     },
-    setPrevUsersInSingleStream: (state, {payload}) => {
-      let currentUsers = state.streamListenersS;
+    setPrevUsersInSingleStream: (state, { payload }) => {
+      let currentUsers = state.streamListeners;
       const existingUserIds = new Set(currentUsers.map(item => item.user?.id));
 
       const newUsers = payload
@@ -200,18 +200,18 @@ const streamingSlice = createSlice({
         }));
       state.streamListenersS = [...currentUsers, ...newUsers];
     },
-    updatedMuteUnmuteUser: (state, {payload}) => {
+    updatedMuteUnmuteUser: (state, { payload }) => {
       if (payload.single) {
         state.streamListenersS = state.streamListenersS.map(listener =>
           listener.user?.id === payload.id
-            ? {...listener, muted: !listener.muted} // Create a new object with updated muted property
+            ? { ...listener, muted: !listener.muted } // Create a new object with updated muted property
             : listener,
         );
         return;
       }
       state.streamListeners = state.streamListeners.map(listener =>
         listener.user?.id === payload.id
-          ? {...listener, muted: !listener.muted} // Create a new object with updated muted property
+          ? { ...listener, muted: !listener.muted } // Create a new object with updated muted property
           : listener,
       );
     },
@@ -222,18 +222,18 @@ const streamingSlice = createSlice({
     //       : listener,
     //   );
     // },
-    updateUserCamera: (state, {payload}) => {
+    updateUserCamera: (state, { payload }) => {
       if (payload.single) {
         state.streamListenersS = state.streamListenersS.map(listener =>
           listener.user?.id === payload.id
-            ? {...listener, camOn: !listener.camOn} // Create a new object with updated muted property
+            ? { ...listener, camOn: !listener.camOn } // Create a new object with updated muted property
             : listener,
         );
         return;
       }
       state.streamListeners = state.streamListeners.map(listener =>
         listener.user?.id === payload.id
-          ? {...listener, camOn: !listener.camOn} // Create a new object with updated muted property
+          ? { ...listener, camOn: !listener.camOn } // Create a new object with updated muted property
           : listener,
       );
     },
@@ -244,7 +244,7 @@ const streamingSlice = createSlice({
     //       : listener,
     //   );
     // },
-    removeUserFromStream: (state, {payload}) => {
+    removeUserFromStream: (state, { payload }) => {
       let currentUsers = state.streamListeners;
       console.log('Copy run key ... filtering out user', currentUsers);
 
