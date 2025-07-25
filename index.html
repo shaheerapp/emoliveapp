@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SVGA to WebP Converter</title>
+    <script src="https://cdn.jsdelivr.net/npm/svgaplayerweb@2.3.1/build/svga.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      #canvas {
+        background: #f0f0f0;
+        margin-top: 20px;
+      }
+      button {
+        padding: 8px 16px;
+        margin: 10px 0;
+      }
+      .status {
+        margin: 10px 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>SVGA to WebP Frame Exporter</h2>
+    <input type="file" id="fileInput" accept=".svga" />
+    <button id="captureBtn" disabled>Capture Frames</button>
+    <div class="status" id="status">Select an SVGA file to begin</div>
+    <p>
+      This will download a ZIP file containing individual frames that can be
+      converted to animated WebP using FFmpeg or
+      <a href="https://ezgif.com/" target="_blank">ezgif.com</a>
+    </p>
+    <canvas id="canvas" width="300" height="300"></canvas>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
+        let player = null;
+        let parser = null;
+        let currentVideoItem = null;
+
+        // Initialize SVGA when the file is selected
+        document
+          .getElementById('fileInput')
+          .addEventListener('change', async e => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            statusEl.textContent = 'Loading SVGA file...';
+
+            try {
+              // Initialize player and parser if not done yet
+              if (!player) {
+                player = new SVGA.Player(canvas);
+                parser = new SVGA.Parser();
+              }
+
+              const arrayBuffer = await file.arrayBuffer();
+              currentVideoItem = await parser.parse(arrayBuffer);
+
+              player.setVideoItem(currentVideoItem);
+              player.startAnimation();
+
+              document.getElementById('captureBtn').disabled = false;
+              statusEl.textContent = 'Ready to capture frames!';
+            } catch (error) {
+              console.error('Error loading SVGA:', error);
+              statusEl.textContent = `Error: ${error.message}`;
+            }
+          });
+
+        // Capture frames button
+        document
+          .getElementById('captureBtn')
+          .addEventListener('click', async () => {
+            if (!currentVideoItem) return;
+
+            const zip = new JSZip();
+            const frameCount = currentVideoItem.frames || 30;
+            const fps = currentVideoItem.FPS || 20;
+            const duration = frameCount / fps;
+            const captureInterval = 1000 / fps; // ms between frames
+
+            statusEl.textContent = `Capturing ${frameCount} frames...`;
+            document.getElementById('captureBtn').disabled = true;
+
+            try {
+              // Go through each frame
+              for (let i = 0; i < frameCount; i++) {
+                // Seek to the specific frame
+                player.stepToFrame(i, true);
+
+                // Wait for the frame to render
+                await new Promise(resolve => {
+                  setTimeout(() => {
+                    // Capture the canvas as WebP
+                    const dataUrl = canvas.toDataURL('image/webp', 0.8);
+                    const base64Data = dataUrl.split(',')[1];
+                    zip.file(
+                      `frame_${String(i).padStart(4, '0')}.webp`,
+                      base64Data,
+                      { base64: true },
+                    );
+                    resolve();
+                  }, 50);
+                });
+
+                // Update status
+                statusEl.textContent = `Captured frame ${
+                  i + 1
+                } of ${frameCount}...`;
+              }
+
+              // Generate and download the ZIP
+              statusEl.textContent = 'Creating ZIP file...';
+              const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(zipBlob);
+              a.download = 'svga_frames.zip';
+              a.click();
+
+              statusEl.textContent = `Done! Downloaded ${frameCount} frames.`;
+            } catch (error) {
+              console.error('Error capturing frames:', error);
+              statusEl.textContent = `Error: ${error.message}`;
+            } finally {
+              document.getElementById('captureBtn').disabled = false;
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

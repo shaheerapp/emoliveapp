@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">bysk.gameapi.gg.jieyou.shop</domain>
+        <domain includeSubdomains="true">dpq1j1jlx7z5i.cloudfront.net</domain>
+    </domain-config>
+</network-security-config>

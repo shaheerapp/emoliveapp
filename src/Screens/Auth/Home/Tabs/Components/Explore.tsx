@@ -1,0 +1,287 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  FlatList,
+  Image,
+  Dimensions,
+  Platform,
+} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import appStyles from '../../../../../styles/styles';
+import {colors} from '../../../../../styles/colors';
+import IconM from 'react-native-vector-icons/MaterialIcons';
+import envVar from '../../../../../config/envVar';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axiosInstance from '../../../../../Api/axiosConfig';
+import {PanGestureHandler, State} from 'react-native-gesture-handler';
+import {useSelector} from 'react-redux';
+import {useAppContext} from '../../../../../Context/AppContext';
+
+const windowWidth = Dimensions.get('window').width;
+const deviceHeight = Dimensions.get('window').height;
+interface Explore {
+  setTab: any;
+  setShowExplore: any;
+  navigation: any;
+}
+export default function Explore({setTab, setShowExplore, navigation}: Explore) {
+  const {tokenMemo} = useAppContext();
+
+  const {users, loading} = useSelector((state: any) => state.users);
+  const {token} = tokenMemo;
+
+  const {streams} = useSelector((state: any) => state.streaming);
+
+  const position = useRef(
+    new Animated.ValueXY({x: (windowWidth * 80) / 100, y: 0}),
+  ).current;
+
+  useEffect(() => {
+    // Start the animation when the component mounts
+    startAnimation();
+  }, []);
+
+  const [data, setData] = useState([]);
+
+  const startAnimation = () => {
+    Animated.timing(position.x, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const getData = async () => {
+    try {
+      const res = await axiosInstance.get('/live-data');
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onGestureEvent = (event: any) => {
+    if (
+      Math.abs(event.nativeEvent.translationX) >
+      Math.abs(event.nativeEvent.translationY)
+    ) {
+      position.setValue({x: Math.abs(event.nativeEvent.translationX), y: 0});
+    }
+    if (
+      event.nativeEvent.state === State.ACTIVE &&
+      event.nativeEvent.translationX > 0 &&
+      Math.abs(event.nativeEvent.translationX) > 80
+    ) {
+      Animated.timing(position.x, {
+        toValue: (windowWidth * 80) / 100,
+        duration: 400,
+        useNativeDriver: true,
+      }).start(() => {
+        // Hide the Explore component after it moves back
+        setShowExplore(false);
+      });
+    }
+  };
+
+  return (
+    <Animated.View
+      style={[styles.container, {transform: [{translateX: position.x}]}]}>
+      <PanGestureHandler onGestureEvent={onGestureEvent}>
+        <TouchableOpacity style={styles.bar}></TouchableOpacity>
+      </PanGestureHandler>
+
+      <View style={{padding: 10, width: '96%'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text
+            style={[appStyles.headline2]}
+            onPress={() => {
+              console.log(position);
+            }}>
+            Explore
+          </Text>
+          <Icon name="clock-time-four-outline" color={colors.lines} size={25} />
+        </View>
+        <View style={styles.live}>
+          {streams.length > 0 ? (
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  Animated.timing(position.x, {
+                    toValue: (windowWidth * 80) / 100,
+                    duration: 400,
+                    useNativeDriver: true,
+                  }).start(() => {
+                    // Hide the Explore component after it moves back
+                    setShowExplore(false);
+                    setTab(2);
+                  });
+                }}>
+                <Text>{streams.length} streams are happing live</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Text style={[appStyles.smallTxt, {color: colors.lines}]}>
+              No one is currently live streaming
+            </Text>
+          )}
+        </View>
+        <View style={{marginTop: 20}}>
+          <Text
+            onPress={() => {
+              console.log(position.setValue({x: 20, y: 0}));
+            }}
+            style={[appStyles.headline2, {color: colors.dominant}]}>
+            Recommended
+          </Text>
+
+          <View
+            style={{
+              height: deviceHeight * 0.62,
+              marginTop: 10,
+            }}>
+            <FlatList
+              refreshing={loading}
+              data={users}
+              contentContainerStyle={{paddingBottom: 20}}
+              keyExtractor={item => item.id?.toString()}
+              renderItem={({item}: any) => (
+                <View style={{marginBottom: 10}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View>
+                      <Image
+                        style={styles.avatar}
+                        source={
+                          item.avatar
+                            ? {
+                                uri:
+                                  envVar.API_URL + 'display-avatar/' + item.id,
+                                headers: {
+                                  Authorization: `Bearer ${token}`,
+                                },
+                              }
+                            : require('../../../../../assets/images/place.jpg')
+                        }
+                      />
+
+                      <View style={styles.accountInfo}>
+                        <Text style={{color: colors.complimentary}}>TOP</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.description}>
+                      <View style={{width: '75%'}}>
+                        <Text style={styles.name}>
+                          {item.first_name + ' ' + item.last_name}
+                        </Text>
+                        <Text style={styles.region}>in Space</Text>
+                        <Text style={styles.duration}>3h35m</Text>
+                        <Text
+                          style={[
+                            appStyles.bodyRg,
+                            {color: colors.body_text, marginTop: 5},
+                          ]}>
+                          <Icon
+                            name="speaker"
+                            size={15}
+                            color={colors.body_text}
+                          />
+                          #chammer
+                        </Text>
+                      </View>
+                      <View style={{width: '20%'}}>
+                        <TouchableOpacity style={styles.followBtn}>
+                          <Icon
+                            name="plus"
+                            size={20}
+                            color={colors.complimentary}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+        {/* Add other views here */}
+      </View>
+    </Animated.View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: colors.complimentary,
+    position: 'absolute',
+    // borderRadius: 4,
+    borderTopLeftRadius: 6,
+    borderBottomLeftRadius: 6,
+    width: '80%',
+    zIndex: 2,
+    right: 0,
+    // padding: 10,
+    top: Platform.OS === 'ios' ? 55 : 20,
+    bottom: 0,
+  },
+  avatar: {height: 100, width: 100, borderRadius: 4},
+  followBtn: {
+    height: 25,
+    // marginLeft: 25,
+    width: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderRadius: 15,
+  },
+  bar: {
+    alignSelf: 'center',
+    borderWidth: 3,
+    borderRadius: 4,
+    height: 80,
+    marginLeft: 6,
+    borderColor: colors.accent,
+  },
+  name: {
+    ...appStyles.bodyMd,
+    color: colors.dominant,
+  },
+  description: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '60%',
+    marginLeft: 15,
+  },
+  live: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lines,
+  },
+  region: {
+    ...appStyles.bodyRg,
+    color: colors.body_text,
+    marginVertical: 5,
+  },
+  duration: {
+    ...appStyles.regularTxtMd,
+    color: colors.body_text,
+  },
+  accountInfo: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 9,
+    width: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 5,
+    left: 5,
+    height: 20,
+  },
+});

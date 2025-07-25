@@ -1,0 +1,312 @@
+import {View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {colors} from '../../styles/colors';
+import appStyles from '../../styles/styles';
+import Svg, {Polyline} from 'react-native-svg';
+
+export default function Audio() {
+  const audioRecorderPlayer = useRef(new AudioRecorderPlayer()).current;
+
+  const [recordSecs, setRecordSecs] = useState(0);
+  const [audioData, setAudioData] = useState<any>([]);
+  const [audioMessage, setAudioMessage] = useState({
+    record: false,
+    recorded: false,
+    played: false,
+  });
+  const [recordTime, setRecordTime] = useState('');
+  const [playTime, setPlayTime] = useState('');
+  const [duration, setDuration] = useState('');
+  const [currentPositionSec, setCurrentPositionSec] = useState<any>(0);
+  const [currentDurationSec, setCurrentDurationSec] = useState<any>(0);
+
+  useEffect(() => {
+    return () => {
+      audioRecorderPlayer.removePlayBackListener();
+      audioRecorderPlayer.removeRecordBackListener();
+    };
+  }, []);
+
+  const onStartPlay = async () => {
+    try {
+      if (audioMessage.played) {
+        await audioRecorderPlayer.stopPlayer();
+
+        setAudioMessage({...audioMessage, played: false});
+        onStopPlay();
+        return;
+      }
+      const msg = await audioRecorderPlayer.startPlayer();
+      console.log('Playing audio:', msg);
+
+      audioRecorderPlayer.addPlayBackListener(e => {
+        const waveform = processAudioData(e.currentPosition); // Simulated data
+        setAudioData(waveform);
+
+        const positionInSeconds = e.currentPosition / 1000;
+        const durationInSeconds = e.duration / 1000;
+
+        setCurrentPositionSec(positionInSeconds.toFixed(2));
+        setCurrentDurationSec(durationInSeconds.toFixed(2));
+        setPlayTime(audioRecorderPlayer.mmss(Math.floor(positionInSeconds)));
+        setDuration(audioRecorderPlayer.mmss(Math.floor(durationInSeconds)));
+
+        if (e.currentPosition >= e.duration) {
+          onStopPlay();
+
+          setAudioMessage({...audioMessage, played: false});
+        }
+      });
+
+      setAudioMessage({...audioMessage, played: true});
+    } catch (error) {
+      console.error('Error starting playback:', error);
+    }
+  };
+
+  const processAudioData = position => {
+    const maxHeight = 18;
+    const maxAmplitude = 100;
+
+    return Array.from({length: 50}, () => {
+      const randomValue = Math.random() * maxAmplitude; // Simulate amplitude
+      return (randomValue / maxAmplitude) * maxHeight; // Normalize to maxHeight
+    });
+  };
+
+  const onPausePlay = async () => {
+    try {
+      if (audioMessage.record) {
+        // const result = await audioRecorderPlayer.stopRecorder();
+        // audioRecorderPlayer.removeRecordBackListener();
+        // setRecordSecs(0);
+        // setRecordTime('');
+        setAudioMessage({...audioMessage, record: false});
+      }
+      // const result = await audioRecorderPlayer.startRecorder();
+      // console.log("file uri ", result)
+      // audioRecorderPlayer.addRecordBackListener(e => {
+      setAudioMessage({...audioMessage, record: true});
+      // const waveform = processAudioData(e.currentPosition); // Simulated data
+      // setAudioData(waveform);
+      // const positionInSeconds = e.currentPosition / 1000;
+      // setPlayTime(audioRecorderPlayer.mmss(Math.floor(positionInSeconds)));
+
+      // setRecordSecs(positionInSeconds);
+      // // setRecordSecs(e.currentPosition);
+      // setRecordTime(
+      //   audioRecorderPlayer.mmssss(Math.floor(positionInSeconds)),
+      // );
+      // setRecordTime(
+      //   audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+      // );
+      // });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onPausePlayx = async () => {
+    try {
+      if (audioMessage.record && audioMessage.recorded) {
+        console.log('c');
+        const result = await audioRecorderPlayer.startRecorder();
+        audioRecorderPlayer.addRecordBackListener(e => {
+          const positionInSeconds = e.currentPosition / 1000;
+          // const durationInSeconds = e.duration / 1000;
+          setAudioMessage({...audioMessage, record: true});
+          setRecordSecs(positionInSeconds);
+          // setRecordSecs(e.currentPosition);
+          setRecordTime(
+            audioRecorderPlayer.mmssss(Math.floor(positionInSeconds)),
+          );
+        });
+
+        return;
+      }
+      if (audioMessage.record && !audioMessage.recorded) {
+        console.log('b');
+        // const res = await audioRecorderPlayer.pausePlayer();
+        // onStopRecord()
+        const result = await audioRecorderPlayer.stopRecorder();
+        audioRecorderPlayer.removeRecordBackListener();
+        setRecordSecs(0);
+        setRecordTime('');
+        setAudioMessage({...audioMessage, record: true, recorded: true});
+        // console.log(res);
+        return;
+      }
+      console.log('a');
+      const result = await audioRecorderPlayer.startRecorder();
+      audioRecorderPlayer.addRecordBackListener(e => {
+        setAudioMessage({...audioMessage, record: true});
+        const waveform = processAudioData(e.currentPosition); // Simulated data
+        setAudioData(waveform);
+        const positionInSeconds = e.currentPosition / 1000;
+        setPlayTime(audioRecorderPlayer.mmss(Math.floor(positionInSeconds)));
+
+        setRecordSecs(positionInSeconds);
+        // setRecordSecs(e.currentPosition);
+        setRecordTime(
+          audioRecorderPlayer.mmssss(Math.floor(positionInSeconds)),
+        );
+        // setRecordTime(
+        //   audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+        // );
+      });
+
+      setAudioMessage({...audioMessage, record: true});
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onStopPlay = async () => {
+    await audioRecorderPlayer.stopPlayer();
+
+    // setAudioData([]);
+  };
+
+  const deleteVoice = async () => {
+    try {
+      await audioRecorderPlayer.stopRecorder();
+      await audioRecorderPlayer.stopPlayer();
+      audioRecorderPlayer.removeRecordBackListener();
+      audioRecorderPlayer.removePlayBackListener();
+
+      setRecordSecs(0);
+      setPlayTime('');
+      setRecordTime('');
+      setAudioData([]);
+      setAudioMessage({...audioMessage, record: false, recorded: false});
+
+      // Optional: Delete file logic (if needed)
+      console.log('Voice deleted');
+    } catch (error) {
+      console.error('Error deleting voice:', error);
+    }
+  };
+  return (
+    <View style={styles.container}>
+      <Text>Audio</Text>
+      <View>
+        <View style={{flexDirection: 'row'}}>
+          <Text
+            style={[
+              appStyles.paragraph1,
+              {marginLeft: 20, color: colors.complimentary},
+            ]}>
+            Currt position : {currentPositionSec}
+          </Text>
+        </View>
+
+        <Text style={[appStyles.headline, {color: colors.complimentary}]}>
+          Record Time: {recordTime}
+        </Text>
+        <Text style={[appStyles.headline, {color: colors.complimentary}]}>
+          Play Time: {playTime}
+        </Text>
+        <Text style={[appStyles.headline, {color: colors.complimentary}]}>
+          Duration: {duration}
+        </Text>
+        <Text style={[appStyles.headline, {color: colors.complimentary}]}>
+          current DurationSec {currentDurationSec}
+        </Text>
+      </View>
+
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        {audioMessage.record && (
+          <TouchableOpacity onPress={deleteVoice}>
+            <Icon name="trash-can" size={35} color={colors.complimentary} />
+          </TouchableOpacity>
+        )}
+
+        {audioMessage.record && (
+          <View style={styles.messageView}>
+            {audioMessage.record && audioMessage.recorded ? (
+              <TouchableOpacity onPress={onStartPlay}>
+                <Icon
+                  name={audioMessage.played ? 'pause' : 'play'}
+                  size={35}
+                  color={colors.accent}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Text>{recordTime}</Text>
+            )}
+            {audioMessage.record && (
+              <>
+                <View style={{width: '70%', padding: 12}}>
+                  <View style={styles.waveForm}>
+                    <Svg height="18" width="100%">
+                      <Polyline
+                        points={audioData
+                          .map((value, index) => `${index * 5},${18 - value}`)
+                          .join(' ')}
+                        fill="none"
+                        stroke={colors.accent}
+                        strokeWidth="2"
+                      />
+                    </Svg>
+                  </View>
+                </View>
+                <Text>{playTime}</Text>
+              </>
+            )}
+          </View>
+        )}
+
+        <View style={styles.voiceBtn}>
+          <TouchableOpacity
+            style={[styles.pauseBtn, audioMessage.record && {borderWidth: 1}]}
+            onPress={onPausePlay}>
+            <Icon
+              name={
+                audioMessage.record && !audioMessage.recorded
+                  ? 'pause'
+                  : 'microphone'
+              }
+              size={25}
+              color={colors.complimentary}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={{marginLeft: 10}}>
+            <Icon name="send" size={25} color={colors.complimentary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.LG,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  waveForm: {
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pauseBtn: {
+    width: 35,
+    height: 35,
+    borderColor: colors.accent,
+    alignItems: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+  },
+  messageView: {
+    width: '70%',
+    flexDirection: 'row',
+    backgroundColor: colors.complimentary,
+    alignItems: 'center',
+    borderRadius: 40,
+  },
+  voiceBtn: {marginLeft: 20, flexDirection: 'row', alignItems: 'center'},
+});

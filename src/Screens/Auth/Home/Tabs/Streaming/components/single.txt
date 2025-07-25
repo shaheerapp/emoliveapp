@@ -1,0 +1,266 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Image,
+  FlatList,
+} from 'react-native';
+import React from 'react';
+import {RtcSurfaceView} from 'react-native-agora';
+import {colors} from '../../../../../../styles/colors';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  addStreamListenerS,
+  removeUserFromSingleStream,
+} from '../../../../../../store/slice/streamingSlice';
+const deviceHeight = Dimensions.get('window').height;
+import {singleLiveHosts} from '../../../../../../store/selectors/selectors';
+import envVar from '../../../../../../config/envVar';
+import {users} from './users';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+interface SingleLiveProps {
+  user: any;
+  isJoined: boolean;
+  token: string;
+  toggleMute: any;
+  offCamera: any;
+  toggleCamera: any;
+}
+export default function SingleLive({
+  user,
+  isJoined,
+  token,
+  toggleMute,
+  offCamera,
+  toggleCamera,
+}: SingleLiveProps) {
+  //
+  const dispatch = useDispatch();
+  const {stream} = useSelector((state: any) => state.streaming);
+  const hosts = useSelector(singleLiveHosts);
+  // cons
+  return (
+    <View style={styles.container}>
+      <View
+        style={{
+          backgroundColor: 'green',
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+        }}>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(addStreamListenerS(users[0]));
+            console.log(hosts);
+          }}>
+          add 1
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(addStreamListenerS(users[1]));
+            console.log(hosts);
+          }}>
+          add 2
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(addStreamListenerS(users[2]));
+            console.log(hosts);
+          }}>
+          add 3
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(addStreamListenerS(users[3]));
+            console.log(hosts);
+          }}>
+          add 4
+        </Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: 'green',
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+        }}>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(removeUserFromSingleStream(1));
+            console.log(hosts);
+          }}>
+          remove 1
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(removeUserFromSingleStream(13));
+            console.log(hosts);
+          }}>
+          remove 2
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(removeUserFromSingleStream(14));
+            console.log(hosts);
+          }}>
+          remove 3
+        </Text>
+        <Text
+          style={{color: '#fff'}}
+          onPress={() => {
+            dispatch(removeUserFromSingleStream(15));
+            console.log(hosts);
+          }}>
+          remove 4
+        </Text>
+        {isJoined ? <RtcSurfaceView canvas={{uid: user.id}} /> : <></>}
+      </View>
+      <View style={styles.guest}>
+        <FlatList
+          data={hosts}
+          // style={}
+          // contentContainerStyle={{padding: 20}}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => (
+            <View style={styles.screen1}>
+              {item.user ? (
+                // {item.user && isJoined ? (
+                <>
+                  <React.Fragment key={item.user.id}>
+                    {item.camOn ? (
+                      <RtcSurfaceView
+                        canvas={{
+                          uid: item.user.id,
+                        }}
+                        style={styles.videoView}
+                      />
+                    ) : (
+                      <View style={{backgroundColor: colors.accent}}>
+                        <Image
+                          source={
+                            item.user.avatar
+                              ? {
+                                  uri:
+                                    envVar.API_URL +
+                                    'display-avatar/' +
+                                    item.user.id,
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                }
+                              : require('../../../../../../assets/images/place.jpg')
+                          }
+                        />
+                      </View>
+                    )}
+
+                    <Text style={styles.userTxt}>
+                      {item.user.first_name + ' ' + item.user.last_name}
+                    </Text>
+                    {/* {item.user.id == user.id && ( */}
+                    <>
+                      <TouchableOpacity
+                        style={{position: 'absolute', right: 5, top: 3}}
+                        onPress={() => toggleCamera()}>
+                        <Icon
+                          name="camera-flip-outline"
+                          size={20}
+                          color={colors.complimentary}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{position: 'absolute', left: 2, top: 3}}
+                        onPress={() => toggleMute(item)}>
+                        <Icon
+                          name={item.muted ? 'microphone-off' : 'microphone'}
+                          size={20}
+                          color={colors.complimentary}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          position: 'absolute',
+                          right: 5,
+                          bottom: 3,
+                        }}
+                        onPress={() => offCamera(item)}>
+                        <Icon
+                          name={
+                            item.camOn ? 'camera-off-outline' : 'camera-outline'
+                          }
+                          size={20}
+                          color={colors.complimentary}
+                        />
+                      </TouchableOpacity>
+                    </>
+                    {/* )} */}
+                  </React.Fragment>
+                </>
+              ) : (
+                <View>
+                  <Text style={{color: colors.complimentary}}>
+                    {item.seatNo}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+    // backgroundColor: colors.LG,
+  },
+  guest: {
+    width: '40%',
+    alignSelf: 'flex-end',
+    position: 'absolute',
+    top: 70,
+  },
+  screen2: {
+    marginTop: 20,
+    backgroundColor: 'black',
+    height: deviceHeight * 0.15,
+    borderColor: colors.yellow,
+    borderWidth: 5,
+    borderRadius: 5,
+  },
+  screen1: {
+    marginBottom: 10,
+    backgroundColor: 'black',
+    height: deviceHeight * 0.15,
+    borderColor: colors.yellow,
+    borderWidth: 5,
+    borderRadius: 5,
+  },
+  videoView: {
+    width: '100%',
+    flex: 1,
+    height: '100%',
+    backgroundColor: 'red',
+  },
+  userTxt: {
+    position: 'absolute',
+    bottom: 10,
+    textAlign: 'center',
+    alignSelf: 'center',
+    color: colors.complimentary,
+  },
+});
+// <View style={styles.screen2}></View> */}

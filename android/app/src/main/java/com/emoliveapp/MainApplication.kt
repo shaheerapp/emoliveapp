@@ -9,6 +9,8 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.reactnativecommunity.webview.RNCWebViewPackage // <-- Add this import
+
 
 class MainApplication : Application(), ReactApplication {
 
