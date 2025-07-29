@@ -46,6 +46,7 @@ import {
   RtcStats,
   AudioProfileType,
   AudioScenarioType,
+  UserInfo,
 } from 'react-native-agora';
 import { ChatClient } from 'react-native-agora-chat';
 
@@ -792,7 +793,9 @@ export default function GoLive({ navigation, route }: any) {
   useEffect(() => {
     const init = async () => {
       await setupVideoSDKEngine();
-      await fetchAgoraToken();
+      // if (user.id !== podcast.host) {
+      //   await fetchAgoraToken();
+      // }
     };
 
     init(); // run the async logic
@@ -828,7 +831,7 @@ export default function GoLive({ navigation, route }: any) {
           String(podcast.channel),
           uid,
           {
-            clientRoleType: ClientRoleType.ClientRoleAudience,
+            clientRoleType: ClientRoleType.ClientRoleBroadcaster,
             publishMicrophoneTrack: true,
             autoSubscribeAudio: true,
           },
@@ -887,6 +890,21 @@ export default function GoLive({ navigation, route }: any) {
           handelConnection(state);
         },
         onJoinChannelSuccess: (_connection: RtcConnection, elapsed: number) => {
+          if (_connection.localUid !== podcast.host) {
+            // Subscribe to all existing users' audio
+            podcastListeners.forEach((listener: any) => {
+              if (listener.user?.id) {
+                agoraEngineRef.current?.muteRemoteAudioStream(
+                  listener.user.id,
+                  false,
+                );
+              }
+            });
+
+            // Also subscribe to host's audio
+            agoraEngineRef.current?.muteRemoteAudioStream(podcast.host, false);
+          }
+
           if (podcast.host === user.id) {
             // createUserChatRoom();
           } else {
@@ -1265,15 +1283,15 @@ export default function GoLive({ navigation, route }: any) {
           String(podcast.channel),
           user.id,
           {
-            clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-            audienceLatencyLevel:
-              AudienceLatencyLevelType.AudienceLatencyLevelLowLatency,
-            publishMicrophoneTrack: true,
+            channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+            clientRoleType: ClientRoleType.ClientRoleAudience,
+            publishMicrophoneTrack: false,
             autoSubscribeAudio: true,
           },
         );
       }
 
+      console.log("result", result);
       if (result === 0) {
         dispatch(setLiveStatus('LOADING'));
       } else {
